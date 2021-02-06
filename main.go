@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"strconv"
+	"sync"
 )
 
 type Item struct {  
@@ -102,6 +104,16 @@ func (chain *Chain) cmdCheck(cmd string) {
 func main() {
 	chain := Chain{}
 	reader := bufio.NewReader(os.Stdin)
+	var wg sync.WaitGroup
+	wg.Add(50000)
+
+	for n := 0; n < 50000; n++ {
+		go func(n int) {
+			defer wg.Done()
+			chain.Set(strconv.Itoa(n),strconv.Itoa(n))
+		}(n)
+    }
+    wg.Wait()
 	for {
 		fmt.Print("nipo > ")
  		cmd, err := reader.ReadString('\n')
