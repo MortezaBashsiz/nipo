@@ -6,23 +6,23 @@ import (
 )
 
 func main() {
-	db := CreateDB()
+	database := CreateDB()
 
-	for n := 0; n < 10; n++ {
-		db.Set(strconv.Itoa(n),strconv.Itoa(n))
+	for n := 0; n < 10000000; n++ {
+		database.Set(strconv.Itoa(n),strconv.Itoa(n))
 	}
-	db.Set("a","b")
-	db.Foreach(func (key,_ string) {
+	database.Set("a","b")
+	database.Foreach(func (key,_ string) {
 		fmt.Println(key)
 	})
 
 	defer func () {
 		if r := recover ();r != nil {
-			fmt.Println("Pannnnnnnnnnnnnnnnnnnniced", r)
+			fmt.Println("Paniced", r)
 		}
 	}()
 
-	sum := db.Accumulate(0, func (state interface{}, key,value string) interface{} {
+	sum := database.Accumulate(0, func (state interface{}, key,value string) interface{} {
 		n := state.(int)
 		if v, err := strconv.Atoi(value); err == nil {
 			n += v 
