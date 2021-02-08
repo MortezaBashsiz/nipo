@@ -2,8 +2,6 @@ package main
 
 import (
 	"regexp"
-	// "fmt"
-    // "os"
 )
 
 type Database struct {
