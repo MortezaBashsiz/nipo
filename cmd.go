@@ -50,7 +50,11 @@ func (database *Database) cmdCheck(cmd string) {
 		}
     }
     if cmdType == "select" && argOne != "" {
-        database.Select(argOne).Foreach(func (key,value string) {
+        db,err := database.Select(argOne)
+        if err != nil {
+            fmt.Println(err)
+        }
+        db.Foreach(func (key,value string) {
             fmt.Println(key,value)
         })
     }

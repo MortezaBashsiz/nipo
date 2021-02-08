@@ -2,8 +2,8 @@ package main
 
 import (
 	"regexp"
-	"fmt"
-    "os"
+	// "fmt"
+    // "os"
 )
 
 type Database struct {
@@ -25,24 +25,25 @@ func (db *Database) Set(key string, value string) (bool) {
 	return ok
 }
 
-func (db *Database) Foreach (action func (string, string)) {
+func (db *Database) Foreach(action func (string, string)) {
 	for key,value := range db.items {
 		action (key,value)
 	}
 }
 
-func (db *Database) Select (keyregex string) *Database {
+func (db *Database) Select(keyregex string) (*Database, error) {
 	selected := CreateDB()
+	var err error
 	for key,value := range db.items {
 		matched,err := regexp.MatchString(keyregex, key)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			return selected,err
 		}
 		if matched {
 			selected.items[key] = value
 		}
 	}
-	return selected
+	return selected,err
 }
 
 func (db *Database) Accumulate (state interface{}, action func (interface{}, string, string) interface{}) interface{} {
