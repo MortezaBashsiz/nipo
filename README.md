@@ -1,4 +1,7 @@
-# Nipo
 
-# What is Nipo
-Nipo is going to be a powerfull and fast **multi-thread in-memory key-value** database with several features
+# Under Construction
+# Welcome to NIPO!
+
+Nipo is going to be a powerful, fast, multi-thread and in-memory key-value database, written by GO.
+With several mathematical and aggregation functionalities on batch of keys and values.
+
