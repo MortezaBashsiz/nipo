@@ -1,0 +1,10 @@
+---
+  
+listen:
+  ip: "localhost"
+  port: "2323"
+  protocol: "tcp"
+
+log:
+  level: "debug"
+  path: "/tmp/nipo.log"
