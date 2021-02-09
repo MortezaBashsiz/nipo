@@ -46,7 +46,7 @@ func (database *Database) cmdCheck(cmd string) {
     if cmdType == "get" && argOne != "" {
 		value,ok := database.Get(argOne)
 		if ok {
-			fmt.Println(value)	
+			fmt.Println(value)
 		}
     }
     if cmdType == "select" && argOne != "" {

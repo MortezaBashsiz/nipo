@@ -4,9 +4,11 @@ import (
 	"net"
 	"os"
 	"fmt"
+	"bufio"
+	"strings"
 )
 
-func (config *Config) OpenSocket() {
+func (database *Database) OpenSocket(config *Config) {
 	config.logger("Opennig Socket on "+config.Listen.Ip+":"+config.Listen.Port+"/"+config.Listen.Protocol)
 	socket,err := net.Listen(config.Listen.Protocol, config.Listen.Ip+":"+config.Listen.Port)
 	if err != nil {
@@ -14,23 +16,19 @@ func (config *Config) OpenSocket() {
 		os.Exit(1)
     }
 	defer socket.Close()
+	connection, err := socket.Accept()
 	for {
-        connection, err := socket.Accept()
-        if err != nil {
-            config.logger("Error accepting: "+err.Error())
-            os.Exit(1)
-        }
-        go handleRequest(connection)
-    }
-}
+		input, err := bufio.NewReader(connection).ReadString('\n')
+		if err != nil {
+				fmt.Println(err)
+				return
+		}
+		if strings.TrimSpace(string(input)) == "STOP" {
+				fmt.Println("Exiting TCP server!")
+				return
+		}
 
-func handleRequest(conn net.Conn) {
-	buf := make([]byte, 4096)
-	reqLen, err := conn.Read(buf)
-	if err != nil {
-	  fmt.Println("Error reading:", err.Error())
+		fmt.Print("-> ", string(input))
+		connection.Write([]byte("nipo > "))
 	}
-	fmt.Println("Adas: "+string(reqLen)+string(buf))
-	conn.Write([]byte("Message received."))
-	conn.Close()
 }
