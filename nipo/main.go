@@ -15,7 +15,7 @@ func main() {
     database := CreateDB()
     if *serverflags {
         config := GetConfig(os.Args[2])
-        config.OpenSocket();
+        database.OpenSocket(config);
     }
     if *clientflags {
         reader := bufio.NewReader(os.Stdin)
