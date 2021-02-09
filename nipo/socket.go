@@ -25,12 +25,12 @@ func (config *Config) OpenSocket() {
 }
 
 func handleRequest(conn net.Conn) {
-	buf := make([]byte, 1024)
+	buf := make([]byte, 4096)
 	reqLen, err := conn.Read(buf)
 	if err != nil {
 	  fmt.Println("Error reading:", err.Error())
 	}
-	fmt.Println("Adas: "+string(reqLen))
+	fmt.Println("Adas: "+string(reqLen)+string(buf))
 	conn.Write([]byte("Message received."))
 	conn.Close()
 }
