@@ -27,7 +27,7 @@ func main() {
                 fmt.Fprintln(os.Stderr, err)
             }
             cmd = strings.TrimSuffix(cmd, "\n")
-            returneddb = database.cmdCheck(cmd)
+            returneddb = database.cmd(cmd)
             returneddb.Foreach(func (key,value string) {
                 fmt.Println(key,value)
             })

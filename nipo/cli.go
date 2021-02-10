@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func (database *Database) cmdCheck(cmd string) *Database {
+func (database *Database) cmd(cmd string) *Database {
 	cmdSplit := strings.Split(cmd," ")
 	cmdType := ""
 	argOne := ""
@@ -28,8 +28,8 @@ func (database *Database) cmdCheck(cmd string) *Database {
             argOne = split
             continue
         }
-        if split != "set" && cmdType == "set" && argOne != "" && argTwo == "" {
-            argTwo = split
+        if split != "set" && cmdType == "set" && argOne != "" {
+            argTwo +=" "+split
             continue
         }
         if split != "get" && cmdType == "get" && argOne == "" {
@@ -42,11 +42,9 @@ func (database *Database) cmdCheck(cmd string) *Database {
         }
     }
     if cmdType == "set" && argOne != "" && argTwo != "" {
-        ok := database.Set(argOne,argTwo)
-        if ok {
-            db.items[argOne] = argTwo
-            return db
-        }
+        database.Set(argOne,argTwo)
+        db.items[argOne] = argTwo
+        return db
     }
     if cmdType == "get" && argOne != "" {
 		value,ok := database.Get(argOne)

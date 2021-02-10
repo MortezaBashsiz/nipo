@@ -8,7 +8,7 @@ type Database struct {
 	items map [string] string
 }
 
-func CreateDatabase () *Database {
+func CreateDatabase() *Database {
 	return &Database{ items : map [string] string {} }
 }
 
@@ -44,7 +44,7 @@ func (database *Database) Select(keyregex string) (*Database, error) {
 	return selected,err
 }
 
-func (database *Database) Accumulate (state interface{}, action func (interface{}, string, string) interface{}) interface{} {
+func (database *Database) Accumulate(state interface{}, action func (interface{}, string, string) interface{}) interface{} {
 	for key,value := range database.items {
 		state = action (state, key, value)
 	}

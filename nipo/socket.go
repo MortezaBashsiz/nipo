@@ -18,21 +18,19 @@ func (database *Database) OpenSocket(config *Config) {
 	defer socket.Close()
 	connection, err := socket.Accept()
 	for {
+		connection.Write([]byte("nipo > "))
 		input, err := bufio.NewReader(connection).ReadString('\n')
 		if err != nil {
 				fmt.Println(err)
 				return
 		}
-		if strings.TrimSpace(string(input)) == "STOP" {
+		if strings.TrimSpace(string(input)) == "exit" {
 				fmt.Println("Exiting TCP server!")
 				return
 		}
-
-		// fmt.Print("-> ", string(input))
-		returneddb := database.cmdCheck(string(input))
+		returneddb := database.cmd(string(input))
         returneddb.Foreach(func (key,value string) {
-            connection.Write([]byte("\n"+key+" "+value))
+            connection.Write([]byte("> "+key+" "+value))
 		})
-		connection.Write([]byte("nipo > "))
 	}
 }
