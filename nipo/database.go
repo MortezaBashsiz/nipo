@@ -8,31 +8,31 @@ type Database struct {
 	items map [string] string
 }
 
-func CreateDB () *Database {
+func CreateDatabase () *Database {
 	return &Database{ items : map [string] string {} }
 }
 
-func (db *Database) Get(key string) (string, bool) {
-	value,ok := db.items[key]
+func (database *Database) Get(key string) (string, bool) {
+	value,ok := database.items[key]
 	return value,ok
 }
 
-func (db *Database) Set(key string, value string) (bool) {
-	_,ok := db.Get(key)
-	db.items[key] = value
+func (database *Database) Set(key string, value string) (bool) {
+	_,ok := database.Get(key)
+	database.items[key] = value
 	return ok
 }
 
-func (db *Database) Foreach(action func (string, string)) {
-	for key,value := range db.items {
+func (database *Database) Foreach(action func (string, string)) {
+	for key,value := range database.items {
 		action (key,value)
 	}
 }
 
-func (db *Database) Select(keyregex string) (*Database, error) {
-	selected := CreateDB()
+func (database *Database) Select(keyregex string) (*Database, error) {
+	selected := CreateDatabase()
 	var err error
-	for key,value := range db.items {
+	for key,value := range database.items {
 		matched,err := regexp.MatchString(keyregex, key)
 		if err != nil {
 			return selected,err
@@ -44,8 +44,8 @@ func (db *Database) Select(keyregex string) (*Database, error) {
 	return selected,err
 }
 
-func (db *Database) Accumulate (state interface{}, action func (interface{}, string, string) interface{}) interface{} {
-	for key,value := range db.items {
+func (database *Database) Accumulate (state interface{}, action func (interface{}, string, string) interface{}) interface{} {
+	for key,value := range database.items {
 		state = action (state, key, value)
 	}
 	return state

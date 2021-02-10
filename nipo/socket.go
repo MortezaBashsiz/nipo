@@ -28,7 +28,11 @@ func (database *Database) OpenSocket(config *Config) {
 				return
 		}
 
-		fmt.Print("-> ", string(input))
+		// fmt.Print("-> ", string(input))
+		returneddb := database.cmdCheck(string(input))
+        returneddb.Foreach(func (key,value string) {
+            connection.Write([]byte("\n"+key+" "+value))
+		})
 		connection.Write([]byte("nipo > "))
 	}
 }
