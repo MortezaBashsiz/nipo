@@ -10,14 +10,15 @@ import (
 
 func main() {
     serverflags := flag.Bool("server", false, "-server CONFIG_PATH")
-    clientflags := flag.Bool("client", true, "-client CONFIG_PATH")
+    cliflags := flag.Bool("cli", false, "-cli CONFIG_PATH")
     flag.Parse()
-    database := CreateDB()
+    database := CreateDatabase()
+    returneddb := CreateDatabase()
     if *serverflags {
         config := GetConfig(os.Args[2])
         database.OpenSocket(config);
     }
-    if *clientflags {
+    if *cliflags {
         reader := bufio.NewReader(os.Stdin)
         for {
             fmt.Print("nipo > ")
@@ -26,7 +27,10 @@ func main() {
                 fmt.Fprintln(os.Stderr, err)
             }
             cmd = strings.TrimSuffix(cmd, "\n")
-            database.cmdCheck(cmd)
+            returneddb = database.cmdCheck(cmd)
+            returneddb.Foreach(func (key,value string) {
+                fmt.Println(key,value)
+            })
         }
     }
 }

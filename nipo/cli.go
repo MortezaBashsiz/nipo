@@ -5,11 +5,12 @@ import (
 	"fmt"
 )
 
-func (database *Database) cmdCheck(cmd string) {
+func (database *Database) cmdCheck(cmd string) *Database {
 	cmdSplit := strings.Split(cmd," ")
 	cmdType := ""
 	argOne := ""
     argTwo := ""
+    db := CreateDatabase()
 	for _, split := range cmdSplit {
         if split == "set" {
             cmdType = "set"
@@ -41,12 +42,17 @@ func (database *Database) cmdCheck(cmd string) {
         }
     }
     if cmdType == "set" && argOne != "" && argTwo != "" {
-        database.Set(argOne,argTwo)
+        ok := database.Set(argOne,argTwo)
+        if ok {
+            db.items[argOne] = argTwo
+            return db
+        }
     }
     if cmdType == "get" && argOne != "" {
 		value,ok := database.Get(argOne)
 		if ok {
-			fmt.Println(value)
+            db.items[argOne] = value
+            return db
 		}
     }
     if cmdType == "select" && argOne != "" {
@@ -55,7 +61,9 @@ func (database *Database) cmdCheck(cmd string) {
             fmt.Println(err)
         }
         db.Foreach(func (key,value string) {
-            fmt.Println(key,value)
+            db.items[key] = value
         })
+        return db
     }
+    return db
 }
