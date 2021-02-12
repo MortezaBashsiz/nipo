@@ -2,7 +2,8 @@ package main
 
 import (
     "log"
-	"os"
+    "os"
+    "fmt"
 )
 
 func (config *Config) logger(strLog string) {
@@ -11,5 +12,6 @@ func (config *Config) logger(strLog string) {
         log.Fatal(err)
     }
     log.SetOutput(file)
+    fmt.Println(strLog)
     log.Println(strLog)
 }

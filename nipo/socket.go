@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func (database *Database) HandelSocket(connection net.Conn) {
+func (database *Database) HandelSocket(config *Config, connection net.Conn) {
 	defer connection.Close()
 	for {
 		connection.Write([]byte("nipo > "))
@@ -18,10 +18,10 @@ func (database *Database) HandelSocket(connection net.Conn) {
 				return
 		}
 		if strings.TrimSpace(string(input)) == "exit" {
-				fmt.Println("Exiting TCP server!")
+				config.logger("Client closed the connection")
 				return
 		}
-		returneddb := database.cmd(string(input))
+		returneddb := database.cmd(string(input), config)
         returneddb.Foreach(func (key,value string) {
             connection.Write([]byte("# "+key+" => "+value+"\n"))
 		})
@@ -41,7 +41,7 @@ func (database *Database) OpenSocket(config *Config) {
 		if err != nil {
 			config.logger("Error accepting socket: "+err.Error())
 		}
-		go database.HandelSocket(connection)
+		go database.HandelSocket(config, connection)
 	}
 }
 
@@ -58,12 +58,12 @@ func ConnectSocket(config *Config) {
 	for {
 		serverResponse, err := serverReader.ReadString('\n')
 		if err != nil {
-			config.logger("client closed the connection")
+			config.logger("Server did not responsed to request")
 		}
 		socket.Write([]byte(serverResponse + "\n"))
 		clientRequest, err := clientReader.ReadString('\n')
 		if err != nil {
-			config.logger("client closed the connection")
+			config.logger("Client request was not correct")
 		}
 		socket.Write([]byte(clientRequest + "\n"))
 	}
