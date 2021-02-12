@@ -44,8 +44,9 @@ func (database *Database) cmdSelect(cmd string) *Database {
     return db
 }
 
-func (database *Database) cmd(cmd string) *Database {
-	cmdFields := strings.Fields(cmd)
+func (database *Database) cmd(cmd string, config *Config) *Database {
+    config.logger("client executed command : "+cmd)
+    cmdFields := strings.Fields(cmd)
     db := CreateDatabase()
     if len(cmdFields) >= 2 {
         switch cmdFields[0] {
