@@ -3,6 +3,7 @@ package main
 import (
 	"strings"
 	"fmt"
+    "strconv"
 )
 
 func (database *Database) cmdSet(cmd string) *Database {
@@ -44,6 +45,23 @@ func (database *Database) cmdSelect(cmd string) *Database {
     return db
 }
 
+func (database *Database) cmdSum(cmd string) *Database {
+    cmdFields := strings.Fields(cmd)
+    key := cmdFields[1]
+    db,err := database.Select(key)
+    returndb := CreateDatabase()
+    sum := 0
+    if err != nil {
+        fmt.Println(err)
+    }
+    db.Foreach(func (key,value string) {
+        valInt,_ :=  strconv.Atoi(value)
+        sum += valInt
+    })
+    returndb.items[key] = strconv.Itoa(sum)
+    return returndb
+}
+
 func (database *Database) cmd(cmd string, config *Config) *Database {
     config.logger("client executed command : "+cmd)
     cmdFields := strings.Fields(cmd)
@@ -58,6 +76,9 @@ func (database *Database) cmd(cmd string, config *Config) *Database {
             break
         case "select":
             db = database.cmdSelect(cmd)
+            break
+        case "sum":
+            db = database.cmdSum(cmd)
             break
         }
     }
