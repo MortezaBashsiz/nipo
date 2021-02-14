@@ -50,15 +50,35 @@ func (database *Database) cmdSum(cmd string) *Database {
     key := cmdFields[1]
     db,err := database.Select(key)
     returndb := CreateDatabase()
-    sum := 0
+    var sum float64 = 0
     if err != nil {
         fmt.Println(err)
     }
     db.Foreach(func (key,value string) {
-        valInt,_ :=  strconv.Atoi(value)
-        sum += valInt
+        valFloat,_ :=  strconv.ParseFloat(value, 64)
+        sum += valFloat
     })
-    returndb.items[key] = strconv.Itoa(sum)
+    returndb.items[key] = fmt.Sprintf("%f", sum)
+    return returndb
+}
+
+func (database *Database) cmdAvg(cmd string) *Database {
+    cmdFields := strings.Fields(cmd)
+    key := cmdFields[1]
+    db,err := database.Select(key)
+    returndb := CreateDatabase()
+    var sum float64 = 0
+    count := 0
+    if err != nil {
+        fmt.Println(err)
+    }
+    db.Foreach(func (key,value string) {
+        valFloat,_ :=  strconv.ParseFloat(value, 64)
+        sum += valFloat
+        count ++
+    })
+    avg := (float64(sum))/(float64(count))
+    returndb.items[key] = fmt.Sprintf("%f", avg)
     return returndb
 }
 
@@ -79,6 +99,9 @@ func (database *Database) cmd(cmd string, config *Config) *Database {
             break
         case "sum":
             db = database.cmdSum(cmd)
+            break
+        case "avg":
+            db = database.cmdAvg(cmd)
             break
         }
     }
