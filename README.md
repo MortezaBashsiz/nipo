@@ -7,31 +7,39 @@ With several mathematical and aggregation functionalities on batch of keys and v
 ## set
 which provides you defining your key & value
 	Syntax : `set key value`
-	**Notes** : 
-		- The key could be any string without space or tab
-		- The value could be any string even spaces and tabs, but for reducing the size and increasing the performance, Several spaces or tabs will be concatenated to one space
-		- The output is set of data with key and value which is the correct amount of stored in memory
-	**Examples**
+
+**Notes** : 
+- The key could be any string without space or tab
+- The value could be any string even spaces and tabs, but for reducing the size and increasing the performance, Several spaces or tabs will be concatenated to one space
+- The output is set of data with key and value which is the correct amount of stored in memory
+
+**Examples**
 	
     nipo > set name My Name       Is  Morteza                    Bashsiz		MB
     # name => My Name Is Morteza Bashsiz MB
 
 ## get
 which provides you get the value of specific key
-	Syntax : `get key`
-	**Notes** : 
-		- The key could be any string without space or tab
-	**Examples**
+
+Syntax : `get key`
+
+**Notes** : 
+- The key could be any string without space or tab
+
+**Examples**
 	
     nipo > get name
     # name => My Name Is Morteza Bashsiz MB
 
 ## select
 which provides you get bulk of specified regex as value
-	Syntax : `select reg.*`
-	**Notes** : 
-		- The key could be any string with standard regex format
-	**Examples**
+
+Syntax : `select reg.*`
+
+**Notes** : 
+- The key could be any string with standard regex format
+
+**Examples**
 	
     nipo > nipo > set my_name Morteza Bashsiz
     # my_name => Morteza Bashsiz
@@ -62,12 +70,15 @@ which provides you get bulk of specified regex as value
 
 ## sum
 which provides you get the sum of values which matches with regex format
-	Syntax : `sum reg.*`
-	**Notes** : 
-		- The key could be any string with standard regex format
-		- The sum is in float64 format
-		- If the value of some keys are not numerical it will replace with 0 (zero)
-	**Examples**
+
+Syntax : `sum reg.*`
+
+**Notes** : 
+- The key could be any string with standard regex format
+- The sum is in float64 format
+- If the value of some keys are not numerical it will replace with 0 (zero)
+
+**Examples**
 	
     nipo > set f 1.5
     # f => 1.5
@@ -91,13 +102,16 @@ which provides you get the sum of values which matches with regex format
     # first.* => 0.000000
     nipo >
    
-   ## avg
+## avg
 which provides you get the average of values which matches with regex format
-	Syntax : `sum reg.*`
-	**Notes** : 
-		- The key could be any string with standard regex format
-		- The sum is in float64 format
-		- If the value of some keys are not numerical it will replace with 0 (zero)
+
+Syntax : `sum reg.*`
+
+**Notes** : 
+- The key could be any string with standard regex format
+- The sum is in float64 format
+- If the value of some keys are not numerical it will replace with 0 (zero)
+
 **Examples**
 	
     nipo > set my_age 35.5
