@@ -121,3 +121,4 @@ Syntax : `sum reg.*`
     nipo > avg .*age.*
     {".*age.*":"26.100000"}
     nipo >
+
