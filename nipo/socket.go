@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"bufio"
 	"strings"
+	"encoding/json"
 )
 
 func (database *Database) HandelSocket(config *Config, connection net.Conn) {
@@ -22,9 +23,14 @@ func (database *Database) HandelSocket(config *Config, connection net.Conn) {
 				return
 		}
 		returneddb := database.cmd(string(input), config)
-        returneddb.Foreach(func (key,value string) {
-            connection.Write([]byte("# "+key+" => "+value+"\n"))
-		})
+		jsondb, err := json.Marshal(returneddb.items)
+		if err != nil {
+			config.logger("Error in converting to json")
+		}
+		if len(jsondb) > 2 {
+			connection.Write(jsondb)
+			connection.Write([]byte("\n"))
+		}
 	}
 }
 

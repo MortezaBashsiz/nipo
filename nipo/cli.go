@@ -4,7 +4,6 @@ import (
 	"strings"
 	"fmt"
     "strconv"
-    "sort"
 )
 
 func (database *Database) cmdSet(cmd string) *Database {
@@ -80,26 +79,6 @@ func (database *Database) cmdAvg(cmd string) *Database {
     return returndb
 }
 
-func (database *Database) cmdSort(cmd string) *Database {
-    cmdFields := strings.Fields(cmd)
-    key := cmdFields[1]
-    db,err := database.Select(key)
-    values := make([]string, 0, len(db.items))
-    returndb := CreateDatabase()
-    if err != nil {
-        fmt.Println(err)
-    }
-    db.Foreach(func (key,value string) {
-        values = append(values, value)
-    })
-    sort.Strings(values)
-
-    for _, v := range values {
-        fmt.Println(v)
-    }
-    return db
-}
-
 func (database *Database) cmd(cmd string, config *Config) *Database {
     config.logger("client executed command : "+cmd)
     cmdFields := strings.Fields(cmd)
@@ -120,9 +99,6 @@ func (database *Database) cmd(cmd string, config *Config) *Database {
             break
         case "avg":
             db = database.cmdAvg(cmd)
-            break
-        case "sort":
-            db = database.cmdSort(cmd)
             break
         }
     }

@@ -16,7 +16,7 @@ which provides you defining your key & value
 **Examples**
 	
     nipo > set name My Name       Is  Morteza                    Bashsiz		MB
-    # name => My Name Is Morteza Bashsiz MB
+    {"name":"My Name Is Morteza Bashsiz MB"}
 
 ## get
 which provides you get the value of specific key
@@ -29,7 +29,7 @@ Syntax : `get key`
 **Examples**
 	
     nipo > get name
-    # name => My Name Is Morteza Bashsiz MB
+    {"name":"My Name Is Morteza Bashsiz MB"}
 
 ## select
 which provides you get bulk of specified regex as value
@@ -42,30 +42,26 @@ Syntax : `select reg.*`
 **Examples**
 	
     nipo > nipo > set my_name Morteza Bashsiz
-    # my_name => Morteza Bashsiz
+    {"my_name":"Morteza Bashsiz"}
     nipo > set my_age 30
-    # my_age => 30
+    {"my_age":"30"}
     nipo > set my_sex male
-    # my_sex => male
+    {"my_sex":"male"}
     nipo > set your_name Behi Rah
-    # your_name => Behi Rah
+    {"your_name":"Behi Rah"}
     nipo > set your_age 34
-    # your_age => 34
+    {"your_age":"34"}
     nipo > set your_sex female
-    # your_sex => female
+    {"your_sex":"female"}
     nipo > get my.*
     nipo > select my.*
-    # my_name => Morteza Bashsiz
-    # my_age => 30
-    # my_sex => male
+    {"my_name":"Morteza Bashsiz","my_age":"30","my_sex":"male"}
     nipo > select your.*
-    # your_name => Behi Rah
-    # your_age => 34
-    # your_sex => female
+    {"your_name":"Behi Rah","your_age":"34"}
+    {"your_sex":"female"}
     nipo > select *.age
     nipo > select .*age.*
-    # your_age => 34
-    # my_age => 30
+    {"your_age":"34","my_age":"30"}
     nipo > 
 
 ## sum
@@ -81,25 +77,25 @@ Syntax : `sum reg.*`
 **Examples**
 	
     nipo > set f 1.5
-    # f => 1.5
+    {"f":"1.5"}
     nipo > set fi 2.3
-    # fi => 2.3
+    {"fi":"2.3"}
     nipo > set fir 5 
-    # fir => 5
+    {"fir":"5"}
     nipo > set firs 6.7
-    # firs => 6.7
+    {"firs":"6.7"}
     nipo > set first first
-    # first => first
+    {"first":"first"}
     nipo > sum f.*
-    # f.* => 15.500000
+    {"f.*":"15.500000"}
     nipo > sum fi.*
-    # fi.* => 14.000000
+    {"fi.*":"14.000000"}
     nipo > sum fir.*
-    # fir.* => 11.700000
+    {"fir.*":"11.700000"}
     nipo > sum firs.*
-    # firs.* => 6.700000
+    {"firs.*":"6.700000"}
     nipo > sum first.*
-    # first.* => 0.000000
+    {"first.*":"0.000000"}
     nipo >
    
 ## avg
@@ -115,13 +111,13 @@ Syntax : `sum reg.*`
 **Examples**
 	
     nipo > set my_age 35.5
-    # my_age => 35.5
+    {"my_age":"35.5"}
     nipo > set your_age 30
-    # your_age => 30
+    {"your_age":"30"}
     nipo > set his_age 23.7
-    # his_age => 23.7
+    {"his_age":"23.7"}
     nipo > set her_age 15.2
-    # her_age => 15.2
+    {"her_age":"15.2"}
     nipo > avg .*age.*
-    # .*age.* => 26.100000
+    {".*age.*":"26.100000"}
     nipo >
