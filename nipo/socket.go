@@ -9,6 +9,30 @@ import (
 	"encoding/json"
 )
 
+func Login(config *Config, connection net.Conn) bool {
+	connection.Write([]byte("nipo > Enter username : "))
+	username, err := bufio.NewReader(connection).ReadString('\n')
+	authorized := false
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+	connection.Write([]byte("nipo > Enter password : "))
+	password, err := bufio.NewReader(connection).ReadString('\n')
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+	username = strings.TrimSuffix(username, "\n")
+	password = strings.TrimSuffix(password, "\n")
+	if username == config.Access.Username {
+		if password == config.Access.Password {
+			authorized = true
+		}
+	}
+	return authorized
+}
+
 func (database *Database) HandelSocket(config *Config, connection net.Conn) {
 	defer connection.Close()
 	for {
@@ -42,12 +66,15 @@ func (database *Database) OpenSocket(config *Config) {
 		os.Exit(1)
 	}
 	defer socket.Close()
-	for {
-		connection, err := socket.Accept()
-		if err != nil {
-			config.logger("Error accepting socket: "+err.Error())
+	connection, err := socket.Accept()
+	if Login(config, connection) {
+		for {
+			connection, err := socket.Accept()
+			if err != nil {
+				config.logger("Error accepting socket: "+err.Error())
+			}
+			go database.HandelSocket(config, connection)
 		}
-		go database.HandelSocket(config, connection)
 	}
 }
 
