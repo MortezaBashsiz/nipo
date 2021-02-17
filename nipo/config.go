@@ -18,6 +18,12 @@ type Config struct {
 		Level 	string
 		Path  	string
 	}
+
+	Access struct {
+		Username string
+		Password string
+		Wildcard string
+	}
 }
 
 func CreateConfig() *Config {

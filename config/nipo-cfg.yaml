@@ -1,10 +1,15 @@
 ---
   
 listen:
-  ip: "localhost"
+  ip: "0.0.0.0"
   port: "2323"
   protocol: "tcp"
 
 log:
   level: "debug"
   path: "/tmp/nipo.log"
+
+access:
+  username: "admin"
+  password: "admin"
+  wildcard: ".*"
