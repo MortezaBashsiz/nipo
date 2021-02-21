@@ -66,8 +66,6 @@ func (database *Database) OpenSocket(config *Config) {
 		os.Exit(1)
 	}
 	defer socket.Close()
-	connection, err := socket.Accept()
-	if Login(config, connection) {
 		for {
 			connection, err := socket.Accept()
 			if err != nil {
@@ -75,7 +73,6 @@ func (database *Database) OpenSocket(config *Config) {
 			}
 			go database.HandelSocket(config, connection)
 		}
-	}
 }
 
 func ConnectSocket(config *Config) {
