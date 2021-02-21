@@ -23,11 +23,14 @@ func (database *Database) cmdSet(cmd string) *Database {
 
 func (database *Database) cmdGet(cmd string) *Database {
     cmdFields := strings.Fields(cmd)
-    key := cmdFields[1]
     db := CreateDatabase()
-    value,ok := database.Get(key)
-    if ok {
-        db.items[key] = value
+    for _, key := range cmdFields {
+        if cmdFields[0] != key {
+            value,ok := database.Get(key)
+            if ok {
+                db.items[key] = value
+            }
+        }
     }
     return db
 }
