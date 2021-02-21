@@ -17,19 +17,26 @@ which provides you defining your key & value
 	
     nipo > set name My Name       Is  Morteza                    Bashsiz		MB
     {"name":"My Name Is Morteza Bashsiz MB"}
+    nipo > set age 30
+    {"age":"30"}
+    nipo > set sex male
+    {"sex":"male"}
 
 ## get
 which provides you get the value of specific key
 
-Syntax : `get key`
+Syntax : `get key [key1 key2 key3 ... keyn]`
 
 **Notes** : 
-- The key could be any string without space or tab
+- The key could be any single or multiple string separated with space
+- The k
 
 **Examples**
 	
     nipo > get name
     {"name":"My Name Is Morteza Bashsiz MB"}
+    nipo > get name age sex
+    {"name":"My Name Is Morteza Bashsiz MB","sex":"male","age":"30"}
 
 ## select
 which provides you get bulk of specified regex as value
