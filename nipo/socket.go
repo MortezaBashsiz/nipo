@@ -28,7 +28,15 @@ func Login(config *Config, connection net.Conn) bool {
 	if username == config.Access.Username {
 		if password == config.Access.Password {
 			authorized = true
+		} else {
+			connection.Write([]byte("nipo > wrong user or password"))
+			connection.Write([]byte("\n"))
+			authorized = false
 		}
+	} else {
+		connection.Write([]byte("nipo > wrong user or password"))
+		connection.Write([]byte("\n"))
+		authorized = false
 	}
 	return authorized
 }
@@ -45,6 +53,10 @@ func (database *Database) HandelSocket(config *Config, connection net.Conn) {
 		if strings.TrimSpace(string(input)) == "exit" {
 				config.logger("Client closed the connection")
 				return
+		}
+		if strings.TrimSpace(string(input)) == "EOF" {
+			config.logger("Client terminated the connection")
+			return
 		}
 		returneddb := database.cmd(string(input), config)
 		jsondb, err := json.Marshal(returneddb.items)
@@ -71,7 +83,12 @@ func (database *Database) OpenSocket(config *Config) {
 			if err != nil {
 				config.logger("Error accepting socket: "+err.Error())
 			}
-			go database.HandelSocket(config, connection)
+			if Login(config,connection) {
+				go database.HandelSocket(config, connection)
+			} else {
+				config.logger("Wrong user pass")
+				connection.Close()
+			}
 		}
 }
 
