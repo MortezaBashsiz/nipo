@@ -10,14 +10,17 @@ import (
 )
 
 func Login(config *Config, connection net.Conn) bool {
-	connection.Write([]byte("nipo > Enter username : "))
+	strRemoteAddr := connection.RemoteAddr().String()
+	connection.Write([]byte("Welcome to NIPO"+"\n"))
+	connection.Write([]byte("You are connecting from "+strRemoteAddr+"\n"))
+	connection.Write([]byte("Enter username : "))
 	username, err := bufio.NewReader(connection).ReadString('\n')
 	authorized := false
 	if err != nil {
 		fmt.Println(err)
 		return false
 	}
-	connection.Write([]byte("nipo > Enter password : "))
+	connection.Write([]byte("Enter password : "))
 	password, err := bufio.NewReader(connection).ReadString('\n')
 	if err != nil {
 		fmt.Println(err)
@@ -29,7 +32,7 @@ func Login(config *Config, connection net.Conn) bool {
 		if password == config.Access.Password {
 			authorized = true
 		} else {
-			connection.Write([]byte("nipo > wrong user or password"))
+			connection.Write([]byte("nipo > wrong user or password from"))
 			connection.Write([]byte("\n"))
 			authorized = false
 		}
@@ -43,6 +46,7 @@ func Login(config *Config, connection net.Conn) bool {
 
 func (database *Database) HandelSocket(config *Config, connection net.Conn) {
 	defer connection.Close()
+	strRemoteAddr := connection.RemoteAddr().String()
 	for {
 		connection.Write([]byte("nipo > "))
 		input, err := bufio.NewReader(connection).ReadString('\n')
@@ -51,11 +55,11 @@ func (database *Database) HandelSocket(config *Config, connection net.Conn) {
 				return
 		}
 		if strings.TrimSpace(string(input)) == "exit" {
-				config.logger("Client closed the connection")
+				config.logger("Client closed the connection from "+strRemoteAddr)
 				return
 		}
 		if strings.TrimSpace(string(input)) == "EOF" {
-			config.logger("Client terminated the connection")
+			config.logger("Client terminated the connection from "+strRemoteAddr)
 			return
 		}
 		returneddb := database.cmd(string(input), config)
@@ -78,18 +82,20 @@ func (database *Database) OpenSocket(config *Config) {
 		os.Exit(1)
 	}
 	defer socket.Close()
-		for {
-			connection, err := socket.Accept()
-			if err != nil {
-				config.logger("Error accepting socket: "+err.Error())
-			}
-			if Login(config,connection) {
-				go database.HandelSocket(config, connection)
-			} else {
-				config.logger("Wrong user pass")
-				connection.Close()
-			}
+	for {
+		connection, err := socket.Accept()
+		strRemoteAddr := connection.RemoteAddr().String()
+		if err != nil {
+			config.logger("Error accepting socket: "+err.Error())
 		}
+		if Login(config,connection) {
+			connection.Write([]byte("Here you go with NIPO"+"\n"))
+			go database.HandelSocket(config, connection)
+		} else {
+			config.logger("Wrong user pass from "+strRemoteAddr)
+			connection.Close()
+		}
+	}
 }
 
 func ConnectSocket(config *Config) {
