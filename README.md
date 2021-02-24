@@ -4,6 +4,9 @@ Nipo is going to be a powerful, fast, multi-thread and in-memory key-value datab
 With several mathematical and aggregation functionalities on batch of keys and values.
 
 # Features
+## login
+You need to login with username and password which you configured at your config file for openning your connection.
+
 ## set
 which provides you defining your key & value
 	Syntax : `set key value`
