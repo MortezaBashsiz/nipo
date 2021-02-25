@@ -12,4 +12,5 @@ log:
 access:
   username: "admin"
   password: "admin"
-  wildcard: ".*"
+  keywildcards: ".*"
+  cmdwildcards: ".*"
