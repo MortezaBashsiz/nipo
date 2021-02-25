@@ -4,7 +4,20 @@ import (
 	"strings"
 	"fmt"
     "strconv"
+    "regexp"
 )
+
+func validateKey(key string, config *Config) bool {
+    keyWildCard := config.Access.Wildcard
+    keyMatched, _ := regexp.MatchString(keyWildCard, key)
+    return keyMatched
+}
+
+func validateCmd(cmd string, config *Config) bool {
+    cmdWildCard := config.Access.Wildcard
+    cmdMatched, _ := regexp.MatchString(cmdWildCard, cmd)
+    return cmdMatched
+}
 
 func (database *Database) cmdSet(cmd string) *Database {
     cmdFields := strings.Fields(cmd)
