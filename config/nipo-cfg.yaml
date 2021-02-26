@@ -9,8 +9,14 @@ log:
   level: "debug"
   path: "/tmp/nipo.log"
 
-access:
-  username: "admin"
-  password: "admin"
-  keywildcards: ".*"
-  cmdwildcards: ".*"
+users:
+  user:
+    username: "admin"
+    password: "admin"
+    keys: ".*"
+    cmds: "all"
+  user:
+    username: "morteza"
+    password: "morteza"
+    keys: ".*"
+    cmds: "all"
