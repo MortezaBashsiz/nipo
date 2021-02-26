@@ -26,9 +26,7 @@ type Config struct {
 		Path  	string
 	}
 
-	Users struct {
-		Access []*User
-	}
+	Users []User
 
 }
 

@@ -10,13 +10,13 @@ log:
   path: "/tmp/nipo.log"
 
 users:
-  user:
-    username: "admin"
-    password: "admin"
-    keys: ".*"
-    cmds: "all"
-  user:
-    username: "morteza"
-    password: "morteza"
-    keys: ".*"
-    cmds: "all"
+  - user:
+      username: "admin"
+      password: "admin"
+      keys: ".*"
+      cmds: "all"
+  - user:
+      username: "morteza"
+      password: "morteza"
+      keys: ".*"
+      cmds: "all"

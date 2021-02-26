@@ -11,10 +11,10 @@ import (
 
 func Login(config *Config, connection net.Conn) bool {
 	strRemoteAddr := connection.RemoteAddr().String()
-	for k, v := range config.Users.Access {
+	for k, v := range config.Users {
 		fmt.Println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 		fmt.Println(k)
-		fmt.Println(v)
+		fmt.Println(v.username)
 	}
 	connection.Write([]byte("Welcome to NIPO"+"\n"))
 	connection.Write([]byte("You are connecting from "+strRemoteAddr+"\n"))
