@@ -7,10 +7,10 @@ import (
 )
 
 type User struct {
-	username string
-	password string
-	keys string
-	cmds string
+	Username string
+	Password string
+	Keys string
+	Cmds string
 }
 
 type Config struct {  
@@ -26,7 +26,7 @@ type Config struct {
 		Path  	string
 	}
 
-	Users []User
+	Users []*User
 
 }
 

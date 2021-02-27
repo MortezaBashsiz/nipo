@@ -11,11 +11,6 @@ import (
 
 func Login(config *Config, connection net.Conn) bool {
 	strRemoteAddr := connection.RemoteAddr().String()
-	for k, v := range config.Users {
-		fmt.Println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-		fmt.Println(k)
-		fmt.Println(v.username)
-	}
 	connection.Write([]byte("Welcome to NIPO"+"\n"))
 	connection.Write([]byte("You are connecting from "+strRemoteAddr+"\n"))
 	connection.Write([]byte("Enter username : "))
@@ -33,20 +28,18 @@ func Login(config *Config, connection net.Conn) bool {
 	}
 	username = strings.TrimSuffix(username, "\n")
 	password = strings.TrimSuffix(password, "\n")
-
-	// if username == config.Access.Username {
-	// 	if password == config.Access.Password {
-	// 		authorized = true
-	// 	} else {
-	// 		connection.Write([]byte("nipo > wrong user or password from"))
-	// 		connection.Write([]byte("\n"))
-	// 		authorized = false
-	// 	}
-	// } else {
-	// 	connection.Write([]byte("nipo > wrong user or password"))
-	// 	connection.Write([]byte("\n"))
-	// 	authorized = false
-	// }
+	for _, user := range config.Users {
+		if username == user.Username {
+			if password == user.Password {
+				authorized = true
+				return authorized
+			} 
+		} 
+	}
+	if authorized == false {
+		connection.Write([]byte("nipo > wrong user or password"))
+		connection.Write([]byte("\n"))
+	}
 	return authorized
 }
 

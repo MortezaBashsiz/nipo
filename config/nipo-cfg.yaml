@@ -11,12 +11,12 @@ log:
 
 users:
   - user:
-      username: "admin"
-      password: "admin"
-      keys: ".*"
-      cmds: "all"
+    username: "admin"
+    password: "admin"
+    keys: ".*"
+    cmds: "all"
   - user:
-      username: "morteza"
-      password: "morteza"
-      keys: ".*"
-      cmds: "all"
+    username: "morteza"
+    password: "bashsiz"
+    keys: "name.*|.*log.*"
+    cmds: "get|select|avg"
