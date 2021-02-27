@@ -28,18 +28,17 @@ func Login(config *Config, connection net.Conn) bool {
 	}
 	username = strings.TrimSuffix(username, "\n")
 	password = strings.TrimSuffix(password, "\n")
-	if username == config.Access.Username {
-		if password == config.Access.Password {
-			authorized = true
-		} else {
-			connection.Write([]byte("nipo > wrong user or password from"))
-			connection.Write([]byte("\n"))
-			authorized = false
-		}
-	} else {
+	for _, user := range config.Users {
+		if username == user.Username {
+			if password == user.Password {
+				authorized = true
+				return authorized
+			} 
+		} 
+	}
+	if authorized == false {
 		connection.Write([]byte("nipo > wrong user or password"))
 		connection.Write([]byte("\n"))
-		authorized = false
 	}
 	return authorized
 }

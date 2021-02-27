@@ -6,6 +6,13 @@ import (
 	"os"
 )
 
+type User struct {
+	Username string
+	Password string
+	Keys string
+	Cmds string
+}
+
 type Config struct {  
 
 	Listen struct {
@@ -19,11 +26,8 @@ type Config struct {
 		Path  	string
 	}
 
-	Access struct {
-		Username string
-		Password string
-		Wildcard string
-	}
+	Users []*User
+
 }
 
 func CreateConfig() *Config {
