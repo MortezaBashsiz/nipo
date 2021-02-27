@@ -3,13 +3,25 @@
 Nipo is going to be a powerful, fast, multi-thread and in-memory key-value database, written by GO.
 With several mathematical and aggregation functionalities on batch of keys and values.
 
+# Config file
+## listen
+At this section you can configure your server side listen IP and PORT, currently only TCP is allowed.
+
+## log
+At this section you can configure your server side log configuration.
+
+## users
+At this section you can configure the users and accesses to use commands and keys.
+- For keys use regex with delimiter "||".
+- For commands use lowercase with delimiter "||".
+
+
 # Features
-## login
-You need to login with username and password which you configured at your config file for openning your connection.
 
 ## set
 which provides you defining your key & value
-	Syntax : `set key value`
+
+Syntax : `set key value`
 
 **Notes** : 
 - The key could be any string without space or tab
