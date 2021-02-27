@@ -18,5 +18,5 @@ users:
   - user:
     username: "morteza"
     password: "bashsiz"
-    keys: "name.*|.*log.*"
-    cmds: "get|select|avg"
+    keys: "name.*||.*log.*"
+    cmds: "get||select||avg"

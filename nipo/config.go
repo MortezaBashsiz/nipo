@@ -34,6 +34,10 @@ func CreateConfig() *Config {
 	return &Config {}
 }
 
+func CreateUser() *User {
+	return &User {}
+}
+
 func GetConfig(path string) *Config {  
 	file, err := os.Open(path)
 	config := CreateConfig()

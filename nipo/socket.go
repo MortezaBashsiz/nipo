@@ -9,7 +9,8 @@ import (
 	"encoding/json"
 )
 
-func Login(config *Config, connection net.Conn) bool {
+func Login(config *Config, connection net.Conn) (bool, *User) {
+	user := CreateUser()
 	strRemoteAddr := connection.RemoteAddr().String()
 	connection.Write([]byte("Welcome to NIPO"+"\n"))
 	connection.Write([]byte("You are connecting from "+strRemoteAddr+"\n"))
@@ -18,21 +19,22 @@ func Login(config *Config, connection net.Conn) bool {
 	authorized := false
 	if err != nil {
 		fmt.Println(err)
-		return false
+		return false,nil
 	}
 	connection.Write([]byte("Enter password : "))
 	password, err := bufio.NewReader(connection).ReadString('\n')
 	if err != nil {
 		fmt.Println(err)
-		return false
+		return false,nil
 	}
 	username = strings.TrimSuffix(username, "\n")
 	password = strings.TrimSuffix(password, "\n")
-	for _, user := range config.Users {
-		if username == user.Username {
-			if password == user.Password {
+	for _, tempuser := range config.Users {
+		if username == tempuser.Username {
+			if password == tempuser.Password {
 				authorized = true
-				return authorized
+				user = tempuser
+				return authorized,user
 			} 
 		} 
 	}
@@ -40,10 +42,10 @@ func Login(config *Config, connection net.Conn) bool {
 		connection.Write([]byte("nipo > wrong user or password"))
 		connection.Write([]byte("\n"))
 	}
-	return authorized
+	return authorized,user
 }
 
-func (database *Database) HandelSocket(config *Config, connection net.Conn) {
+func (database *Database) HandelSocket(config *Config, connection net.Conn, user *User) {
 	defer connection.Close()
 	strRemoteAddr := connection.RemoteAddr().String()
 	for {
@@ -61,12 +63,17 @@ func (database *Database) HandelSocket(config *Config, connection net.Conn) {
 			config.logger("Client terminated the connection from "+strRemoteAddr)
 			return
 		}
-		returneddb := database.cmd(string(input), config)
+		returneddb,message := database.cmd(string(input), config, user)
 		jsondb, err := json.Marshal(returneddb.items)
+		if message != ""{
+			connection.Write([]byte(message))
+			connection.Write([]byte("\n"))
+		}
 		if err != nil {
 			config.logger("Error in converting to json")
 		}
 		if len(jsondb) > 2 {
+			connection.Write([]byte(message))
 			connection.Write(jsondb)
 			connection.Write([]byte("\n"))
 		}
@@ -87,9 +94,10 @@ func (database *Database) OpenSocket(config *Config) {
 		if err != nil {
 			config.logger("Error accepting socket: "+err.Error())
 		}
-		if Login(config,connection) {
+		loginResult,user := Login(config,connection)
+		if loginResult {
 			connection.Write([]byte("Here you go with NIPO"+"\n"))
-			go database.HandelSocket(config, connection)
+			go database.HandelSocket(config, connection, user)
 		} else {
 			config.logger("Wrong user pass from "+strRemoteAddr)
 			connection.Close()

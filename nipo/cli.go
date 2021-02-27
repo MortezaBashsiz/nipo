@@ -4,20 +4,37 @@ import (
 	"strings"
 	"fmt"
     "strconv"
-    // "regexp"
+    "regexp"
 )
 
-// func validateKey(key string, config *Config) bool {
-//     keyWildCard := config.Access.Wildcard
-//     keyMatched, _ := regexp.MatchString(keyWildCard, key)
-//     return keyMatched
-// }
+func validateCmd(cmd string, user *User) bool {
+    cmds := strings.Split(user.Cmds, "||")
+    allowed := false
+    for count := range cmds {
+        if cmds[count] == "all" {
+            return true
+        }
+        if cmds[count] == cmd {
+            return true
+        }
+    }
+    return allowed
+}
 
-// func validateCmd(cmd string, config *Config) bool {
-//     cmdWildCard := config.Access.Wildcard
-//     cmdMatched, _ := regexp.MatchString(cmdWildCard, cmd)
-//     return cmdMatched
-// }
+func validateKey(key string, user *User) bool {
+    keys := strings.Split(user.Keys, "||")
+    allowed := false
+    for count := range keys {
+        matched, err := regexp.MatchString(keys[count], key)
+        if err != nil {
+            fmt.Println(err)
+        }
+        if matched {
+            return true
+        }
+    }
+    return allowed
+}
 
 func (database *Database) cmdSet(cmd string) *Database {
     cmdFields := strings.Fields(cmd)
@@ -95,28 +112,79 @@ func (database *Database) cmdAvg(cmd string) *Database {
     return returndb
 }
 
-func (database *Database) cmd(cmd string, config *Config) *Database {
+func (database *Database) cmd(cmd string, config *Config, user *User) (*Database, string) {
     config.logger("client executed command : "+cmd)
     cmdFields := strings.Fields(cmd)
     db := CreateDatabase()
+    message := ""
     if len(cmdFields) >= 2 {
         switch cmdFields[0] {
         case "set":
-            db = database.cmdSet(cmd)
+            if validateCmd("set", user) {
+                if validateKey(cmdFields[1], user) {
+                    db = database.cmdSet(cmd)
+                }else{
+                    message = ("User "+ user.Username +" not allowed to use regex : "+cmdFields[1])
+                    config.logger(message)
+                }
+            }else{
+                message = ("User "+ user.Username +" not allowed to use command : "+cmd)
+                config.logger(message)
+            }
             break
         case "get":
-            db = database.cmdGet(cmd)
+            if validateCmd("get", user) {
+                if validateKey(cmdFields[1], user) {
+                    db = database.cmdGet(cmd)
+                }else{
+                    message = ("User "+ user.Username +" not allowed to use regex : "+cmdFields[1])
+                    config.logger(message)
+                }
+            }else{
+                message = ("User "+ user.Username +" not allowed to use command : "+cmd)
+                config.logger(message)
+            }
             break
         case "select":
-            db = database.cmdSelect(cmd)
+            if validateCmd("select", user) {
+                if validateKey(cmdFields[1], user) {
+                    db = database.cmdSelect(cmd)
+                }else{
+                    message = ("User "+ user.Username +" not allowed to use regex : "+cmdFields[1])
+                    config.logger(message)
+                }
+            }else{
+                message = ("User "+ user.Username +" not allowed to use command : "+cmd)
+                config.logger(message)
+            }
             break
         case "sum":
-            db = database.cmdSum(cmd)
+            if validateCmd("sum", user) {
+                if validateKey(cmdFields[1], user) {
+                    db = database.cmdSum(cmd)
+                }else{
+                    message = ("User "+ user.Username +" not allowed to use regex : "+cmdFields[1])
+                    config.logger(message)
+                }
+            }else{
+                message = ("User "+ user.Username +" not allowed to use command : "+cmd)
+                config.logger(message)
+            }
             break
         case "avg":
-            db = database.cmdAvg(cmd)
+            if validateCmd("avg", user) {
+                if validateKey(cmdFields[1], user) {
+                    db = database.cmdAvg(cmd)
+                }else{
+                    message = ("User "+ user.Username +" not allowed to use regex : "+cmdFields[1])
+                    config.logger(message)
+                }
+            }else{
+                message = ("User "+ user.Username +" not allowed to use command : "+cmd)
+                config.logger(message)
+            }
             break
         }
     }
-    return db
+    return db,message
 }
