@@ -104,27 +104,3 @@ func (database *Database) OpenSocket(config *Config) {
 		}
 	}
 }
-
-func ConnectSocket(config *Config) {
-	socket,err := net.Dial(config.Listen.Protocol, config.Listen.Ip+":"+config.Listen.Port)
-	if err != nil {
-        config.logger("Error Connecting: "+err.Error())
-		os.Exit(1)
-	}
-	defer socket.Close()
-	clientReader := bufio.NewReader(os.Stdin)
-	serverReader := bufio.NewReader(socket)
- 
-	for {
-		serverResponse, err := serverReader.ReadString('\n')
-		if err != nil {
-			config.logger("Server did not responsed to request")
-		}
-		socket.Write([]byte(serverResponse + "\n"))
-		clientRequest, err := clientReader.ReadString('\n')
-		if err != nil {
-			config.logger("Client request was not correct")
-		}
-		socket.Write([]byte(clientRequest + "\n"))
-	}
-}
