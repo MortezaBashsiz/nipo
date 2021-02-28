@@ -56,11 +56,11 @@ func (database *Database) HandelSocket(config *Config, connection net.Conn, user
 				return
 		}
 		if strings.TrimSpace(string(input)) == "exit" {
-				config.logger("Client closed the connection from "+strRemoteAddr)
+				config.logger("Client closed the connection from " + strRemoteAddr, 1)
 				return
 		}
 		if strings.TrimSpace(string(input)) == "EOF" {
-			config.logger("Client terminated the connection from "+strRemoteAddr)
+			config.logger("Client terminated the connection from " + strRemoteAddr, 2)
 			return
 		}
 		returneddb,message := database.cmd(string(input), config, user)
@@ -70,7 +70,7 @@ func (database *Database) HandelSocket(config *Config, connection net.Conn, user
 			connection.Write([]byte("\n"))
 		}
 		if err != nil {
-			config.logger("Error in converting to json")
+			config.logger("Error in converting to json" , 1)
 		}
 		if len(jsondb) > 2 {
 			connection.Write([]byte(message))
@@ -81,10 +81,10 @@ func (database *Database) HandelSocket(config *Config, connection net.Conn, user
 }
 
 func (database *Database) OpenSocket(config *Config) {
-	config.logger("Opennig Socket on "+config.Listen.Ip+":"+config.Listen.Port+"/"+config.Listen.Protocol)
+	config.logger("Opennig Socket on "+config.Listen.Ip+":"+config.Listen.Port+"/"+config.Listen.Protocol, 1)
 	socket,err := net.Listen(config.Listen.Protocol, config.Listen.Ip+":"+config.Listen.Port)
 	if err != nil {
-        config.logger("Error listening: "+err.Error())
+        config.logger("Error listening: "+err.Error(), 2)
 		os.Exit(1)
 	}
 	defer socket.Close()
@@ -92,14 +92,14 @@ func (database *Database) OpenSocket(config *Config) {
 		connection, err := socket.Accept()
 		strRemoteAddr := connection.RemoteAddr().String()
 		if err != nil {
-			config.logger("Error accepting socket: "+err.Error())
+			config.logger("Error accepting socket: "+err.Error(), 2)
 		}
 		loginResult,user := Login(config,connection)
 		if loginResult {
 			connection.Write([]byte("Here you go with NIPO"+"\n"))
 			go database.HandelSocket(config, connection, user)
 		} else {
-			config.logger("Wrong user pass from "+strRemoteAddr)
+			config.logger("Wrong user pass from "+strRemoteAddr, 1)
 			connection.Close()
 		}
 	}

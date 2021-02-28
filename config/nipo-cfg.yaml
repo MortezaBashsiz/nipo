@@ -6,7 +6,7 @@ listen:
   protocol: "tcp"
 
 log:
-  level: "debug"
+  level: 2
   path: "/tmp/nipo.log"
 
 users:
@@ -16,7 +16,7 @@ users:
     keys: ".*"
     cmds: "all"
   - user:
-    username: "morteza"
-    password: "bashsiz"
+    username: "readonly"
+    password: "readonly"
     keys: "name.*||.*log.*"
     cmds: "get||select||avg"
