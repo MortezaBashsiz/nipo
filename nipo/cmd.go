@@ -113,7 +113,9 @@ func (database *Database) cmdAvg(cmd string) *Database {
 }
 
 func (database *Database) cmd(cmd string, config *Config, user *User) (*Database, string) {
-    config.logger("client executed command : "+cmd)
+    config.logger("client executed command : " + cmd, 1)
+    config.logger("cmd.go - func cmd - with cmd : " + cmd , 2)
+    config.logger("cmd.go - func cmd - with user : " + user.Username , 2)
     cmdFields := strings.Fields(cmd)
     db := CreateDatabase()
     message := ""
@@ -125,11 +127,11 @@ func (database *Database) cmd(cmd string, config *Config, user *User) (*Database
                     db = database.cmdSet(cmd)
                 }else{
                     message = ("User "+ user.Username +" not allowed to use regex : "+cmdFields[1])
-                    config.logger(message)
+                    config.logger(message, 1)
                 }
             }else{
                 message = ("User "+ user.Username +" not allowed to use command : "+cmd)
-                config.logger(message)
+                config.logger(message, 1)
             }
             break
         case "get":
@@ -138,11 +140,11 @@ func (database *Database) cmd(cmd string, config *Config, user *User) (*Database
                     db = database.cmdGet(cmd)
                 }else{
                     message = ("User "+ user.Username +" not allowed to use regex : "+cmdFields[1])
-                    config.logger(message)
+                    config.logger(message, 1)
                 }
             }else{
                 message = ("User "+ user.Username +" not allowed to use command : "+cmd)
-                config.logger(message)
+                config.logger(message, 1)
             }
             break
         case "select":
@@ -151,11 +153,11 @@ func (database *Database) cmd(cmd string, config *Config, user *User) (*Database
                     db = database.cmdSelect(cmd)
                 }else{
                     message = ("User "+ user.Username +" not allowed to use regex : "+cmdFields[1])
-                    config.logger(message)
+                    config.logger(message, 1)
                 }
             }else{
                 message = ("User "+ user.Username +" not allowed to use command : "+cmd)
-                config.logger(message)
+                config.logger(message, 1)
             }
             break
         case "sum":
@@ -164,11 +166,11 @@ func (database *Database) cmd(cmd string, config *Config, user *User) (*Database
                     db = database.cmdSum(cmd)
                 }else{
                     message = ("User "+ user.Username +" not allowed to use regex : "+cmdFields[1])
-                    config.logger(message)
+                    config.logger(message, 1)
                 }
             }else{
                 message = ("User "+ user.Username +" not allowed to use command : "+cmd)
-                config.logger(message)
+                config.logger(message, 1)
             }
             break
         case "avg":
@@ -177,11 +179,11 @@ func (database *Database) cmd(cmd string, config *Config, user *User) (*Database
                     db = database.cmdAvg(cmd)
                 }else{
                     message = ("User "+ user.Username +" not allowed to use regex : "+cmdFields[1])
-                    config.logger(message)
+                    config.logger(message, 1)
                 }
             }else{
                 message = ("User "+ user.Username +" not allowed to use command : "+cmd)
-                config.logger(message)
+                config.logger(message, 1)
             }
             break
         }

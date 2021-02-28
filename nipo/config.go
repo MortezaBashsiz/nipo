@@ -22,7 +22,7 @@ type Config struct {
 	}
 
 	Log struct {
-		Level 	string
+		Level 	int
 		Path  	string
 	}
 
@@ -51,7 +51,8 @@ func GetConfig(path string) *Config {
 	if err != nil {
 	    log.Fatal(err)
 	}
-	config.logger("Nipo service is starting ...")
-	config.logger("Reading config file on :" +path)
+	config.logger("config.go - func GetConfig - with path : "+ path , 2)
+	config.logger("Nipo service is starting ...", 1)
+	config.logger("Reading config file on :" + path , 1)
 	return config
 }
