@@ -24,6 +24,12 @@ func Login(config *Config, connection net.Conn) (bool, *User) {
 		fmt.Println(err)
 		return false,nil
 	}
+	if len(loginCmdFields) < 3 {
+		fmt.Println("Error : login command needs 2 arg ")
+		config.logger("Error : login command needs 2 arg ", 1)
+		connection.Write([]byte("Error : login command needs 2 arg \n"))
+		return false,nil
+	}
 	if loginCmdFields[0] != "login" {
 		fmt.Println("Error : Wrong command : "+loginCmdFields[0])
 		config.logger("Error : Wrong command : "+loginCmdFields[0], 1)
