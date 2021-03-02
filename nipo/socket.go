@@ -14,32 +14,36 @@ func Login(config *Config, connection net.Conn) (bool, *User) {
 	strRemoteAddr := connection.RemoteAddr().String()
 	connection.Write([]byte("Welcome to NIPO"+"\n"))
 	connection.Write([]byte("You are connecting from "+strRemoteAddr+"\n"))
-	connection.Write([]byte("Enter username : "))
-	username, err := bufio.NewReader(connection).ReadString('\n')
+	connection.Write([]byte("Enter your login like as following \n"))
+	connection.Write([]byte("login USERNAME PASSWORD \n"))
+	connection.Write([]byte("nipo > "))
+	logincmd, err := bufio.NewReader(connection).ReadString('\n')
 	authorized := false
+	loginCmdFields := strings.Fields(string(logincmd))
 	if err != nil {
 		fmt.Println(err)
 		return false,nil
 	}
-	connection.Write([]byte("Enter password : "))
-	password, err := bufio.NewReader(connection).ReadString('\n')
-	if err != nil {
-		fmt.Println(err)
+	if loginCmdFields[0] != "login" {
+		fmt.Println("Error : Wrong command : "+loginCmdFields[0])
+		config.logger("Error : Wrong command : "+loginCmdFields[0], 1)
+		connection.Write([]byte("Error : Wrong command : "+loginCmdFields[0]+"\n"))
 		return false,nil
 	}
-	username = strings.TrimSuffix(username, "\n")
-	password = strings.TrimSuffix(password, "\n")
+	username := loginCmdFields[1]
+	password := loginCmdFields[2]
 	for _, tempuser := range config.Users {
 		if username == tempuser.Username {
 			if password == tempuser.Password {
 				authorized = true
 				user = tempuser
+				connection.Write([]byte("OK\n"))
 				return authorized,user
 			} 
 		} 
 	}
 	if authorized == false {
-		connection.Write([]byte("nipo > wrong user or password"))
+		connection.Write([]byte("Error : wrong user or password \n"))
 		connection.Write([]byte("\n"))
 	}
 	return authorized,user
