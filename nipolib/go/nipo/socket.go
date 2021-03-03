@@ -37,8 +37,8 @@ func (connection *Connection) socketLogin(cmd string) (bool) {
 }
 
 func (connection *Connection) socketWrite(cmd string) (string, bool) {
-	connection.socket.Write([]byte(cmd+"\n"))
 	response := make([]byte, 4096)
+	connection.socket.Write([]byte(cmd+"\n"))
 	connection.socket.Read(response)
 	return string(response),true
 }

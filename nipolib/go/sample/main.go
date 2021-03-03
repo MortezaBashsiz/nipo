@@ -2,7 +2,8 @@ package main
 
 import (
 	"nipo"
-	"fmt"
+	// "fmt"
+	"strconv"
 )
 
 func main() {
@@ -10,11 +11,12 @@ func main() {
 	//ok := false
 	connection,ok := nipo.Login("admin admin 127.0.0.2 2323")
 	if ok {
-		fmt.Println("aaaaaaaaaaaa")
-		setres,_ := connection.Set("name", "adas")
-		fmt.Println(setres)
-		getres,_ := connection.Get("name")
-		fmt.Println(getres)
+		for n := 0; n <= 500000; n++ {
+			go connection.Set(strconv.Itoa(n), strconv.Itoa(n))
+		}
+		for n := 0; n <= 500000; n++ {
+			go connection.Get(strconv.Itoa(n))
+		}
 	}
 	connection.Logout()
 }
