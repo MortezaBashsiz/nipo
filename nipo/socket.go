@@ -1,6 +1,8 @@
 package main
 
 import (
+	"runtime"
+	"sync"
 	"net"
 	"os"
 	"fmt"
@@ -98,19 +100,26 @@ func (database *Database) OpenSocket(config *Config) {
 		os.Exit(1)
 	}
 	defer socket.Close()
-	for {
-		connection, err := socket.Accept()
-		strRemoteAddr := connection.RemoteAddr().String()
-		if err != nil {
-			config.logger("Error accepting socket: "+err.Error(), 2)
+	runtime.GOMAXPROCS(config.Proc.Threads)
+    var wg sync.WaitGroup
+    wg.Add(1)
+	go func() {
+        defer wg.Done()
+		for {
+			connection, err := socket.Accept()
+			strRemoteAddr := connection.RemoteAddr().String()
+			if err != nil {
+				config.logger("Error accepting socket: "+err.Error(), 2)
+			}
+			loginResult,user := Login(config,connection)
+			if loginResult {
+				connection.Write([]byte("Here you go with NIPO"+"\n"))
+				go database.HandelSocket(config, connection, user)
+			} else {
+				config.logger("Wrong user pass from "+strRemoteAddr, 1)
+				connection.Close()
+			}
 		}
-		loginResult,user := Login(config,connection)
-		if loginResult {
-			connection.Write([]byte("Here you go with NIPO"+"\n"))
-			go database.HandelSocket(config, connection, user)
-		} else {
-			config.logger("Wrong user pass from "+strRemoteAddr, 1)
-			connection.Close()
-		}
-	}
+	}()
+	wg.Wait()
 }

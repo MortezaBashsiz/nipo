@@ -15,6 +15,10 @@ type User struct {
 
 type Config struct {  
 
+	Proc struct {
+		Threads int
+	}
+
 	Listen struct {
 		Ip		string
 		Port	string

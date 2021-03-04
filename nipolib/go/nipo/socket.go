@@ -40,5 +40,9 @@ func (connection *Connection) socketWrite(cmd string) (string, bool) {
 	response := make([]byte, 4096)
 	connection.socket.Write([]byte(cmd+"\n"))
 	connection.socket.Read(response)
-	return string(response),true
+	ok := false
+	if string(response) != nil {
+		return string(response),true
+	}
+	return string(response),ok
 }
