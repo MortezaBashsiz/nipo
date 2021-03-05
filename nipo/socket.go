@@ -13,11 +13,6 @@ import (
 
 func Login(config *Config, connection net.Conn) (bool, *User) {
 	user := CreateUser()
-	strRemoteAddr := connection.RemoteAddr().String()
-	connection.Write([]byte("Welcome to NIPO"+"\n"))
-	connection.Write([]byte("You are connecting from "+strRemoteAddr+"\n"))
-	connection.Write([]byte("Enter your login like as following \n"))
-	connection.Write([]byte("login USERNAME PASSWORD \n"))
 	connection.Write([]byte("nipo > "))
 	logincmd, err := bufio.NewReader(connection).ReadString('\n')
 	authorized := false
@@ -100,26 +95,27 @@ func (database *Database) OpenSocket(config *Config) {
 		os.Exit(1)
 	}
 	defer socket.Close()
-	runtime.GOMAXPROCS(config.Proc.Threads)
+	runtime.GOMAXPROCS(config.Proc.Cores)
     var wg sync.WaitGroup
-    wg.Add(1)
-	go func() {
-        defer wg.Done()
-		for {
-			connection, err := socket.Accept()
-			strRemoteAddr := connection.RemoteAddr().String()
-			if err != nil {
-				config.logger("Error accepting socket: "+err.Error(), 2)
+	for thread := 0; thread < config.Proc.Threads; thread++ {
+		wg.Add(1)
+		go func() {
+        	defer wg.Done()
+			for {
+				connection, err := socket.Accept()
+				strRemoteAddr := connection.RemoteAddr().String()
+				if err != nil {
+					config.logger("Error accepting socket: "+err.Error(), 2)
+				}
+				loginResult,user := Login(config,connection)
+				if loginResult {
+					database.HandelSocket(config, connection, user)
+				} else {
+					config.logger("Wrong user pass from "+strRemoteAddr, 1)
+					connection.Close()
+				}
 			}
-			loginResult,user := Login(config,connection)
-			if loginResult {
-				connection.Write([]byte("Here you go with NIPO"+"\n"))
-				go database.HandelSocket(config, connection, user)
-			} else {
-				config.logger("Wrong user pass from "+strRemoteAddr, 1)
-				connection.Close()
-			}
-		}
-	}()
+		}()
+	}
 	wg.Wait()
 }

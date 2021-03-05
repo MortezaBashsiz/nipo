@@ -1,6 +1,7 @@
 ---
 proc:
-  threads: 4
+  cores: 1
+  threads: 1
 
 listen:
   ip: "0.0.0.0"

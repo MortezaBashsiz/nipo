@@ -16,6 +16,7 @@ type User struct {
 type Config struct {  
 
 	Proc struct {
+		Cores	int
 		Threads int
 	}
 
