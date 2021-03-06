@@ -4,6 +4,7 @@ import (
 	"net"
 	"strings"
 	"fmt"
+	"bufio"
 )
 
 func socketConnect(connectionString string) (*Connection,bool) {
@@ -30,7 +31,6 @@ func (connection *Connection) socketLogin(cmd string) (bool) {
 	connection.socket.Read(response)
 	ok := false
 	if string(response) == "OK" {
-		fmt.Println("Login success")
 		return true
 	}
 	return ok
@@ -38,7 +38,10 @@ func (connection *Connection) socketLogin(cmd string) (bool) {
 
 func (connection *Connection) socketWrite(cmd string) (string, bool) {
 	connection.socket.Write([]byte(cmd+"\n"))
-	response := make([]byte, 4096)
-	connection.socket.Read(response)
-	return string(response),true
+	response,_ := bufio.NewReader(connection.socket).ReadString('\n')
+	ok := false
+	if string(response) != "" {
+		return string(response),true
+	}
+	return string(response),ok
 }

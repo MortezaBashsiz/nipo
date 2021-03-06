@@ -51,3 +51,13 @@ func (connection *Connection) Get(key string) (string, bool) {
 	result,ok := connection.socketWrite("get "+ key)
 	return result,ok
 }
+
+func (connection *Connection) Select(key string) (string, bool) {
+	result,ok := connection.socketWrite("select "+ key)
+	return result,ok
+}
+
+func (connection *Connection) Avg(key string) (string, bool) {
+	result,ok := connection.socketWrite("avg "+ key)
+	return result,ok
+}

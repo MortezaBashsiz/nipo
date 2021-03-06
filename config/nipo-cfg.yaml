@@ -1,12 +1,11 @@
 ---
-  
 listen:
   ip: "0.0.0.0"
   port: "2323"
   protocol: "tcp"
 
 log:
-  level: 2
+  level: 1
   path: "/tmp/nipo.log"
 
 users:
