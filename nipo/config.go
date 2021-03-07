@@ -7,13 +7,18 @@ import (
 )
 
 type User struct {
-	Username string
-	Password string
+	Name string
+	Token string
 	Keys string
 	Cmds string
 }
 
 type Config struct {  
+
+	Proc struct {
+		Cores   int
+		Threads int
+	}
 
 	Listen struct {
 		Ip		string

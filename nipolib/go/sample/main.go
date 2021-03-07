@@ -7,41 +7,31 @@ import (
 	"fmt"
 	"strconv"
 	"os"
+	// "time"
 )
 
 func main() {
-	// runtime.GOMAXPROCS(10)
-    // var wg sync.WaitGroup
+	max,_ := strconv.Atoi(os.Args[2])
 	if os.Args[1] == "set" {
-		for n:=0 ; n < 10 ; n++ {
-    		// wg.Add(1)
-			// go func() {
-				connection,ok := nipo.Login("admin admin 127.0.0.1 2323")
-				if ok {
-					for n := 0; n <= 1000000; n++ {
-						connection.Set(strconv.Itoa(n), strconv.Itoa(n))
-					}
-					result,_ := connection.Avg(".*")
-					fmt.Println(result)
-				}
-			// }()
+		for n:=0 ; n <= max ; n++ {
+			connection,_ := nipo.OpenConnection(os.Args[3]+" 127.0.0.1 2323")
+			connection.Set(os.Args[3], strconv.Itoa(n), strconv.Itoa(n))
+			connection.Logout()
 		}
+		connection,_ := nipo.OpenConnection(os.Args[3]+" 127.0.0.1 2323")
+		result,_ := connection.Avg(os.Args[3], ".*")
+		fmt.Println(result)
+		connection.Logout()
 	}
 	if os.Args[1] == "get" {
-		// for n:=0 ; n < 10 ; n++ {
-    		// wg.Add(1)
-			// go func() {
-				connection,ok := nipo.Login("admin admin 192.168.100.194 2323")
-				if ok {
-					for n := 0; n <= 1000000; n++ {
-						connection.Get(strconv.Itoa(n))
-					}
-					result,_ := connection.Avg(".*")
-					fmt.Println(result)
-				}
-			// }()
-		// }
+		for n:=0 ; n <= max ; n++ {
+			connection,_ := nipo.OpenConnection(os.Args[3]+" 127.0.0.1 2323")
+			connection.Get(os.Args[3], strconv.Itoa(n))
+			connection.Logout()
+		}
+		connection,_ := nipo.OpenConnection(os.Args[3]+" 127.0.0.1 2323")
+		result,_ := connection.Avg(os.Args[3], ".*")
+		fmt.Println(result)
+		connection.Logout()
 	}
-	// wg.Wait()
-	// connection.Logout()
 }

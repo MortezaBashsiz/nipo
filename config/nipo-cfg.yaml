@@ -1,4 +1,8 @@
 ---
+proc:
+  cores: 8
+  threads: 8
+
 listen:
   ip: "0.0.0.0"
   port: "2323"
@@ -10,12 +14,12 @@ log:
 
 users:
   - user:
-    username: "admin"
-    password: "admin"
+    name: "admin"
+    token: "admin"
     keys: ".*"
     cmds: "all"
   - user:
-    username: "readonly"
-    password: "readonly"
+    name: "readonly"
+    token: "readonly"
     keys: "name.*||.*log.*"
     cmds: "get||select||avg"
