@@ -10,7 +10,7 @@ import (
 func socketConnect(connectionString string) (*Connection,bool) {
 	connection := CreateConnection()
 	connectionStringFields := strings.Fields(connectionString)
-	socket,err := net.Dial("tcp", connectionStringFields[2]+":"+connectionStringFields[3])
+	socket,err := net.Dial("tcp", connectionStringFields[1]+":"+connectionStringFields[2])
 	if err != nil {
         fmt.Println("nipolib Error connecting to socket: "+err.Error())
 	}

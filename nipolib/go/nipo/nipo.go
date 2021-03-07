@@ -16,7 +16,7 @@ func CreateConnection() *Connection {
 }
 
 func OpenConnection(connectionString string) (Connection, bool) {
-	// user pass IP port
+	// IP Port
 	connection,ok := socketConnect(connectionString)
 	connection.connectionString = connectionString
 	if !ok {
@@ -42,22 +42,22 @@ func Login(connectionString string) (Connection, bool) {
 	return connection,ok
 }
 
-func (connection *Connection) Set(key string, value string) (string, bool) {
-	result,ok := connection.socketWrite("set "+ key + " " + value)
+func (connection *Connection) Set(token string, key string, value string) (string, bool) {
+	result,ok := connection.socketWrite(token + " set "+ key + " " + value)
 	return result,ok
 }
 
-func (connection *Connection) Get(key string) (string, bool) {
-	result,ok := connection.socketWrite("get "+ key)
+func (connection *Connection) Get(token string, key string) (string, bool) {
+	result,ok := connection.socketWrite(token + " get "+ key)
 	return result,ok
 }
 
-func (connection *Connection) Select(key string) (string, bool) {
-	result,ok := connection.socketWrite("select "+ key)
+func (connection *Connection) Select(token string, key string) (string, bool) {
+	result,ok := connection.socketWrite(token + " select "+ key)
 	return result,ok
 }
 
-func (connection *Connection) Avg(key string) (string, bool) {
-	result,ok := connection.socketWrite("avg "+ key)
+func (connection *Connection) Avg(token string, key string) (string, bool) {
+	result,ok := connection.socketWrite(token + " avg "+ key)
 	return result,ok
 }

@@ -113,9 +113,9 @@ func (database *Database) cmdAvg(cmd string) *Database {
 }
 
 func (database *Database) cmd(cmd string, config *Config, user *User) (*Database, string) {
-    config.logger("client executed command : " + cmd, 1)
+    config.logger("client executed command : " + cmd, 2)
     config.logger("cmd.go - func cmd - with cmd : " + cmd , 2)
-    config.logger("cmd.go - func cmd - with user : " + user.Username , 2)
+    config.logger("cmd.go - func cmd - with user : " + user.Name , 2)
     cmdFields := strings.Fields(cmd)
     db := CreateDatabase()
     message := ""
@@ -126,11 +126,11 @@ func (database *Database) cmd(cmd string, config *Config, user *User) (*Database
                 if validateKey(cmdFields[1], user) {
                     db = database.cmdSet(cmd)
                 }else{
-                    message = ("User "+ user.Username +" not allowed to use regex : "+cmdFields[1])
+                    message = ("User "+ user.Name +" not allowed to use regex : "+cmdFields[1])
                     config.logger(message, 1)
                 }
             }else{
-                message = ("User "+ user.Username +" not allowed to use command : "+cmd)
+                message = ("User "+ user.Name +" not allowed to use command : "+cmd)
                 config.logger(message, 1)
             }
             break
@@ -139,11 +139,11 @@ func (database *Database) cmd(cmd string, config *Config, user *User) (*Database
                 if validateKey(cmdFields[1], user) {
                     db = database.cmdGet(cmd)
                 }else{
-                    message = ("User "+ user.Username +" not allowed to use regex : "+cmdFields[1])
+                    message = ("User "+ user.Name +" not allowed to use regex : "+cmdFields[1])
                     config.logger(message, 1)
                 }
             }else{
-                message = ("User "+ user.Username +" not allowed to use command : "+cmd)
+                message = ("User "+ user.Name +" not allowed to use command : "+cmd)
                 config.logger(message, 1)
             }
             break
@@ -152,11 +152,11 @@ func (database *Database) cmd(cmd string, config *Config, user *User) (*Database
                 if validateKey(cmdFields[1], user) {
                     db = database.cmdSelect(cmd)
                 }else{
-                    message = ("User "+ user.Username +" not allowed to use regex : "+cmdFields[1])
+                    message = ("User "+ user.Name +" not allowed to use regex : "+cmdFields[1])
                     config.logger(message, 1)
                 }
             }else{
-                message = ("User "+ user.Username +" not allowed to use command : "+cmd)
+                message = ("User "+ user.Name +" not allowed to use command : "+cmd)
                 config.logger(message, 1)
             }
             break
@@ -165,11 +165,11 @@ func (database *Database) cmd(cmd string, config *Config, user *User) (*Database
                 if validateKey(cmdFields[1], user) {
                     db = database.cmdSum(cmd)
                 }else{
-                    message = ("User "+ user.Username +" not allowed to use regex : "+cmdFields[1])
+                    message = ("User "+ user.Name +" not allowed to use regex : "+cmdFields[1])
                     config.logger(message, 1)
                 }
             }else{
-                message = ("User "+ user.Username +" not allowed to use command : "+cmd)
+                message = ("User "+ user.Name +" not allowed to use command : "+cmd)
                 config.logger(message, 1)
             }
             break
@@ -178,11 +178,11 @@ func (database *Database) cmd(cmd string, config *Config, user *User) (*Database
                 if validateKey(cmdFields[1], user) {
                     db = database.cmdAvg(cmd)
                 }else{
-                    message = ("User "+ user.Username +" not allowed to use regex : "+cmdFields[1])
+                    message = ("User "+ user.Name +" not allowed to use regex : "+cmdFields[1])
                     config.logger(message, 1)
                 }
             }else{
-                message = ("User "+ user.Username +" not allowed to use command : "+cmd)
+                message = ("User "+ user.Name +" not allowed to use command : "+cmd)
                 config.logger(message, 1)
             }
             break
