@@ -3,7 +3,6 @@ package main
 import (
 	"runtime"
 	"sync"
-    "time"
 	"net"
 	"os"
 	"fmt"
@@ -56,7 +55,35 @@ func (database *Database) HandelSocket(config *Config, client *Client) {
 		config.logger("Client terminated the connection from " + strRemoteAddr, 2)
 		return
 	}
-	if client.Validate(inputFields[0], config) {
+
+	if config.Global.Authorization == "true" {
+		if client.Validate(inputFields[0], config) {
+			cmd := ""
+			if len(inputFields) >= 3 {
+				cmd = inputFields[1]
+				for n:=2; n<len(inputFields); n++ {
+					cmd += " "+inputFields[n]
+				}   
+			}
+			returneddb,message := database.cmd(cmd, config, &client.User, true)
+			jsondb, err := json.Marshal(returneddb.items)
+			if message != ""{
+				client.Connection.Write([]byte(message))
+				client.Connection.Write([]byte("\n"))
+			}
+			if err != nil {
+				config.logger("Error in converting to json" , 1)
+			}
+			if len(jsondb) > 2 {
+				client.Connection.Write([]byte(message))
+				client.Connection.Write(jsondb)
+				client.Connection.Write([]byte("\n"))
+			}
+		} else {
+			config.logger("Wrong token "+strRemoteAddr, 1)
+			client.Connection.Close()
+		}
+	} else {
 		cmd := ""
 		if len(inputFields) >= 3 {
 			cmd = inputFields[1]
@@ -64,7 +91,7 @@ func (database *Database) HandelSocket(config *Config, client *Client) {
 				cmd += " "+inputFields[n]
 			}   
 		}
-		returneddb,message := database.cmd(cmd, config, &client.User)
+		returneddb,message := database.cmd(cmd, config, &client.User, false)
 		jsondb, err := json.Marshal(returneddb.items)
 		if message != ""{
 			client.Connection.Write([]byte(message))
@@ -78,9 +105,6 @@ func (database *Database) HandelSocket(config *Config, client *Client) {
 			client.Connection.Write(jsondb)
 			client.Connection.Write([]byte("\n"))
 		}
-	} else {
-		config.logger("Wrong token "+strRemoteAddr, 1)
-		client.Connection.Close()
 	}
 }
 
@@ -106,7 +130,6 @@ func (database *Database) OpenSocket(config *Config) {
 					config.logger("Error accepting socket: "+err.Error(), 2)
 				}
 				database.HandelSocket(config, client)
-				time.Sleep(1 * time.Nanosecond)
 				Lock.Unlock()
 			}
 		}()

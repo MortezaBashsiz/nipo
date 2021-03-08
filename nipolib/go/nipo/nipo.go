@@ -3,7 +3,6 @@ package nipo
 import (
 	"net"
 	"fmt"
-	"strings"
 )
 
 type Connection struct {
@@ -11,12 +10,24 @@ type Connection struct {
 	connectionString string
 }
 
+type Config struct {
+	token, server,	port	string
+}
+
+func CreateConfig(token, server, port string) *Config {
+	return &Config {
+		token	: token ,
+		server 	: server ,
+		port	: port ,	
+	}
+}
+
 func CreateConnection() *Connection {
 	return &Connection {}
 }
 
-func OpenConnection(connectionString string) (Connection, bool) {
-	// IP Port
+func OpenConnection(config *Config) (Connection, bool) {
+	connectionString := config.token + " " + config.server + " " + config.port
 	connection,ok := socketConnect(connectionString)
 	connection.connectionString = connectionString
 	if !ok {
@@ -26,38 +37,50 @@ func OpenConnection(connectionString string) (Connection, bool) {
 }
 
 func (connection *Connection) Logout() bool {
-	connection.Close()
+	connection.socket.Close()
 	return true
 }
 
-func Login(connectionString string) (Connection, bool) {
-	connection,ok := OpenConnection(connectionString)
-	connectionStringFields := strings.Fields(connectionString)
-	username := connectionStringFields[0]
-	password := connectionStringFields[1]
-	cmdLogin := "login " + username + " " + password
-	if connection.socketLogin(cmdLogin){
-		return connection,true
+func Set(config *Config, key string, value string) (string, bool) {
+	connection,ok := OpenConnection(config)
+	result := ""
+	if ok {
+		result,ok := connection.socketWrite(config.token + " set "+ key + " " + value)
+		return result,ok	
 	}
-	return connection,ok
-}
-
-func (connection *Connection) Set(token string, key string, value string) (string, bool) {
-	result,ok := connection.socketWrite(token + " set "+ key + " " + value)
+	connection.Logout()
 	return result,ok
 }
 
-func (connection *Connection) Get(token string, key string) (string, bool) {
-	result,ok := connection.socketWrite(token + " get "+ key)
+func Get(config *Config, key string) (string, bool) {
+	connection,ok := OpenConnection(config)
+	result := ""
+	if ok {
+		result,ok := connection.socketWrite(config.token + " get "+ key)
+		return result,ok
+	}
+	connection.Logout()
 	return result,ok
 }
 
-func (connection *Connection) Select(token string, key string) (string, bool) {
-	result,ok := connection.socketWrite(token + " select "+ key)
+func Select(config *Config, key string) (string, bool) {
+	connection,ok := OpenConnection(config)
+	result := ""
+	if ok {
+		result,ok := connection.socketWrite(config.token + " select "+ key)
+		return result,ok
+	}
+	connection.Logout()
 	return result,ok
 }
 
-func (connection *Connection) Avg(token string, key string) (string, bool) {
-	result,ok := connection.socketWrite(token + " avg "+ key)
+func Avg(config *Config, key string) (string, bool) {
+	connection,ok := OpenConnection(config)
+	result := ""
+	if ok {
+		result,ok := connection.socketWrite(config.token + " avg "+ key)
+		return result,ok
+	}
+	connection.Logout()
 	return result,ok
 }
