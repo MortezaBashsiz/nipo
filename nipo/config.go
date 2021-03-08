@@ -15,6 +15,10 @@ type User struct {
 
 type Config struct {  
 
+	Global struct {
+		Authorization string
+	}
+
 	Proc struct {
 		Cores   int
 		Threads int

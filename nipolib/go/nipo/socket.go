@@ -19,23 +19,6 @@ func socketConnect(connectionString string) (*Connection,bool) {
 	return connection,true
 }
 
-func (connection *Connection) Close() (bool) {
-	socket := connection.socket
-	socket.Close()
-	return true
-}
-
-func (connection *Connection) socketLogin(cmd string) (bool) {
-	response := make([]byte, 4096)
-	connection.socket.Write([]byte(cmd+"\n"))
-	connection.socket.Read(response)
-	ok := false
-	if string(response) == "OK" {
-		return true
-	}
-	return ok
-}
-
 func (connection *Connection) socketWrite(cmd string) (string, bool) {
 	connection.socket.Write([]byte(cmd+"\n"))
 	response,_ := bufio.NewReader(connection.socket).ReadString('\n')
@@ -44,4 +27,10 @@ func (connection *Connection) socketWrite(cmd string) (string, bool) {
 		return string(response),true
 	}
 	return string(response),ok
+}
+
+func (connection *Connection) socketClose() (bool) {
+	socket := connection.socket
+	socket.Close()
+	return true
 }

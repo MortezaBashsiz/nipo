@@ -2,36 +2,63 @@ package main
 
 import (
 	"nipo"
-	// "runtime"
-	// "sync"
-	"fmt"
 	"strconv"
 	"os"
-	// "time"
+	"runtime"
+	"sync"
+	"fmt"
 )
+var Wait sync.WaitGroup
+var Lock sync.Mutex
 
-func main() {
-	max,_ := strconv.Atoi(os.Args[2])
-	if os.Args[1] == "set" {
-		for n:=0 ; n <= max ; n++ {
-			connection,_ := nipo.OpenConnection(os.Args[3]+" 127.0.0.1 2323")
-			connection.Set(os.Args[3], strconv.Itoa(n), strconv.Itoa(n))
-			connection.Logout()
-		}
-		connection,_ := nipo.OpenConnection(os.Args[3]+" 127.0.0.1 2323")
-		result,_ := connection.Avg(os.Args[3], ".*")
-		fmt.Println(result)
-		connection.Logout()
+func set(config *nipo.Config, regex string, max int) {
+	for n:=0 ; n <= max ; n++ {
+		key := regex + "_" + strconv.Itoa(n)
+		nipo.Set(config, key, strconv.Itoa(n))
 	}
-	if os.Args[1] == "get" {
-		for n:=0 ; n <= max ; n++ {
-			connection,_ := nipo.OpenConnection(os.Args[3]+" 127.0.0.1 2323")
-			connection.Get(os.Args[3], strconv.Itoa(n))
-			connection.Logout()
+}
+func get(config *nipo.Config, regex string, max int) {
+	for n:=0 ; n <= max ; n++ {
+		key := regex + "_" + strconv.Itoa(n)
+		nipo.Get(config, key)
+	}
+}
+func main() {
+	// token server port get/set regex count cores threads
+	config := nipo.CreateConfig(os.Args[1], os.Args[2], os.Args[3])
+	regex := os.Args[5]
+	max,_ := strconv.Atoi(os.Args[6])
+	cores,_ := strconv.Atoi(os.Args[7])
+	threads,_ := strconv.Atoi(os.Args[8])
+
+	if os.Args[4] == "set" {
+		runtime.GOMAXPROCS(cores)
+		for thread := 0; thread < threads; thread++ {
+			Wait.Add(1)
+			go func() {
+    	    	defer Wait.Done()
+					Lock.Lock()
+					set(config, regex, max)
+					Lock.Unlock()
+			}()
 		}
-		connection,_ := nipo.OpenConnection(os.Args[3]+" 127.0.0.1 2323")
-		result,_ := connection.Avg(os.Args[3], ".*")
+		Wait.Wait()
+		result,_ := nipo.Avg(config, regex+"_.*")
 		fmt.Println(result)
-		connection.Logout()
+	}
+	if os.Args[4] == "get" {
+		runtime.GOMAXPROCS(cores)
+		for thread := 0; thread < threads; thread++ {
+			Wait.Add(1)
+			go func() {
+    	    	defer Wait.Done()
+					Lock.Lock()
+					get(config, regex, max)
+					Lock.Unlock()
+			}()
+		}
+		Wait.Wait()
+		result,_ := nipo.Avg(config, regex+"_.*")
+		fmt.Println(result)
 	}
 }

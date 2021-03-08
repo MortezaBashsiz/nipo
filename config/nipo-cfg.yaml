@@ -1,7 +1,10 @@
 ---
+global:
+  authorization: "true"
+
 proc:
   cores: 8
-  threads: 8
+  threads: 4
 
 listen:
   ip: "0.0.0.0"
@@ -15,11 +18,11 @@ log:
 users:
   - user:
     name: "admin"
-    token: "admin"
+    token: "061b30a7-1a12-4280-8e3c-6bc9a19b1683"
     keys: ".*"
     cmds: "all"
   - user:
     name: "readonly"
-    token: "readonly"
+    token: "0517376d-49c1-40eb-a8fc-fd73b70a4ce9"
     keys: "name.*||.*log.*"
     cmds: "get||select||avg"
