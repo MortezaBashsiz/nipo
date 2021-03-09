@@ -1,6 +1,6 @@
 ---
 global:
-  authorization: "true"
+  authorization: "false"
 
 proc:
   cores: 8
