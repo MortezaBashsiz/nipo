@@ -7,27 +7,29 @@ import (
 )
 
 type User struct {
-	Name string
-	Token string
-	Keys string
-	Cmds string
+	Name, Token, Keys, Cmds string
+}
+
+type Node struct {
+	Id 	int
+	Ip, Port, Authorization, Token	string
 }
 
 type Config struct {  
 
 	Global struct {
-		Authorization string
+		Authorization 	string
+		Master			string
 	}
 
+	Slaves []*Node
+
 	Proc struct {
-		Cores   int
-		Threads int
+		Cores, Threads int
 	}
 
 	Listen struct {
-		Ip		string
-		Port	string
-		Protocol string
+		Ip, Port, Protocol string
 	}
 
 	Log struct {
