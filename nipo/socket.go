@@ -20,7 +20,6 @@ type Client struct {
 	Authorized bool
 }
 
-
 func CreateClient() *Client {
 	return &Client {}
 }
