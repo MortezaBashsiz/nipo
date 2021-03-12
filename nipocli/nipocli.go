@@ -14,11 +14,23 @@ func checkCmd(cmd string, config *nipo.Config) string {
     if len(cmdFields) >= 2 {
         switch cmdFields[0] {
         case "set":
-            result,_ = nipo.Set(config, cmdFields[1], cmdFields[2])
+			value := ""
+			for count:=2 ; count < len(cmdFields); count++ {
+				value += cmdFields[count]+" "
+			}
+            result,_ = nipo.Set(config, cmdFields[1], value)
             break
         case "get":
-            result,_ = nipo.Get(config, cmdFields[1])
+			keys := ""
+			for count:=1 ; count < len(cmdFields); count++ {
+				keys += cmdFields[count]+" "
+			}
+			fmt.Println(keys)
+            result,_ = nipo.Get(config, keys)
             break
+		case "sum":
+            result,_ = nipo.Sum(config, cmdFields[1])
+			break
         case "select":
             result,_ = nipo.Select(config, cmdFields[1])
             break
