@@ -25,7 +25,6 @@ func checkCmd(cmd string, config *nipo.Config) string {
 			for count:=1 ; count < len(cmdFields); count++ {
 				keys += cmdFields[count]+" "
 			}
-			fmt.Println(keys)
             result,_ = nipo.Get(config, keys)
             break
 		case "sum":
@@ -50,6 +49,7 @@ func Start(config *nipo.Config) {
 			fmt.Fprintln(os.Stderr, err)
 		}
 		result := checkCmd(cmd, config)
-		fmt.Print(result)
+		result = strings.TrimSuffix(result, "\n")
+		fmt.Println(result)
 	}
 }

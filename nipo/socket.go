@@ -39,7 +39,6 @@ func (client *Client) Validate(token string, config *Config) bool {
 func (database *Database) HandelSocketWithAutorization(config *Config, client *Client) {
 	defer client.Connection.Close()
 	strRemoteAddr := client.Connection.RemoteAddr().String()
-	client.Connection.Write([]byte("nipo > "))
 	input, err := bufio.NewReader(client.Connection).ReadString('\n')
 	if err != nil {
 			fmt.Println(err)
@@ -85,7 +84,6 @@ func (database *Database) HandelSocketWithAutorization(config *Config, client *C
 func (database *Database) HandelSocketWithoutAutorization(config *Config, client *Client) {
 	defer client.Connection.Close()
 	strRemoteAddr := client.Connection.RemoteAddr().String()
-	client.Connection.Write([]byte("nipo > "))
 	input, err := bufio.NewReader(client.Connection).ReadString('\n')
 	if err != nil {
 			fmt.Println(err)
