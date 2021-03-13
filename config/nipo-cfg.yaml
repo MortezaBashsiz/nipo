@@ -1,14 +1,21 @@
 ---
 # Global section defines some global parameters
-global:
-  # autorization (string): [true/false]
-  # Defines that the clients must be work with token or not. If set "true" you have to define users section
+
+# authorization (string): [true/false]
+# Defines that the clients must be work with token or not. If set "true" you have to define users section
+
+# master (string): [true/false]
+# Defines that this server has some slaves. If set "true" you have to define slaves section
+global:  
   authorization: "false"
-  # master (string): [true/false]
-  # Defines that this server has some slaves. If set "true" you have to define slaves section
   master: "true"
 
-# Slave section 
+# Slave section defines parameter about slaves of this server
+# id (int) : defines the id of slave. Master will sync the slaves by id priority.
+# ip (string) : is the IP of slave
+# port (string) : is the listen port of destination IP
+# authorization (string) : [true/false] defines if the destination slave uses token or not
+# token (string) : in case of authorization is true, you need to define token
 slaves:
   - slave:
     id : 1
@@ -22,20 +29,41 @@ slaves:
     port : "2325"
     authorization: "false"
     token: "061b30a7-1a12-4280-8e3c-6bc9a19b1683"
-   
+
+# Proc section defines parameters for multi-threading and multi-processing
+# cores (int) : the count of cores you want to used by nipo
+# threads (int) : the count of threads you want to created by nipo
+# NOTE : the best practice is using threads to times of cores
 proc:
-  cores: 8
+  cores: 2
   threads: 4
 
+# Listen section defines parameters for used ip, port, protocol by nipo
+# NOTE : nipo currently used only tcp protocol
 listen:
   ip: "0.0.0.0"
   port: "2323"
   protocol: "tcp"
 
+# Log section defines parameters for logging
+# level (int) :
+#   0 - no log
+#   1 - info
+#   2 - debug
+# path (string) : defines the path of log file
 log:
   level: 1
   path: "/tmp/nipo.log"
 
+# Users section defines parameters for authorization. 
+# If authorization in global section is true, this section had to be defined
+# you can define several users
+# name (string) : just is metadata for name of user
+# token (string) : used for authorization
+# keys (string) : the regex of keys which user should have access.
+#                 if you have several regexes you can separate them with delimiter "||"
+# cmds (string) : the list of commands that user should have access to execute
+#                 if you have several commands you can separate them with delimiter "||"
 users:
   - user:
     name: "admin"

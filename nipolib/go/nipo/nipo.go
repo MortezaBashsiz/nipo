@@ -84,3 +84,14 @@ func Avg(config *Config, key string) (string, bool) {
 	connection.Logout()
 	return result,ok
 }
+
+func Sum(config *Config, key string) (string, bool) {
+	connection,ok := OpenConnection(config)
+	result := ""
+	if ok {
+		result,ok := connection.socketWrite(config.token + " sum "+ key)
+		return result,ok
+	}
+	connection.Logout()
+	return result,ok
+}
