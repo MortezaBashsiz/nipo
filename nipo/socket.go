@@ -36,7 +36,7 @@ func (client *Client) Validate(token string, config *Config) bool {
 	return client.Authorized
 }
 
-func (database *Database) HandelSocketWithAutorization(config *Config, client *Client) {
+func (database *Database) HandelSocketAuth(config *Config, client *Client) {
 	defer client.Connection.Close()
 	strRemoteAddr := client.Connection.RemoteAddr().String()
 	input, err := bufio.NewReader(client.Connection).ReadString('\n')
@@ -61,7 +61,7 @@ func (database *Database) HandelSocketWithAutorization(config *Config, client *C
 				cmd += " "+inputFields[n]
 			}   
 		}
-		returneddb,message := database.cmdWithAutorization(cmd, config, &client.User)
+		returneddb,message := database.cmdAuth(cmd, config, &client.User)
 		jsondb, err := json.Marshal(returneddb.items)
 		if message != ""{
 			client.Connection.Write([]byte(message))
@@ -81,7 +81,7 @@ func (database *Database) HandelSocketWithAutorization(config *Config, client *C
 	}
 }
 
-func (database *Database) HandelSocketWithoutAutorization(config *Config, client *Client) {
+func (database *Database) HandelSocketNoAuth(config *Config, client *Client) {
 	defer client.Connection.Close()
 	strRemoteAddr := client.Connection.RemoteAddr().String()
 	input, err := bufio.NewReader(client.Connection).ReadString('\n')
@@ -106,7 +106,7 @@ func (database *Database) HandelSocketWithoutAutorization(config *Config, client
 			cmd += " "+inputFields[n]
 		}   
 	}
-	returneddb,message := database.cmdWithoutAutorization(cmd, config, &client.User)
+	returneddb,message := database.cmdNoAuth(cmd, config, &client.User)
 	jsondb, err := json.Marshal(returneddb.items)
 	if message != ""{
 		client.Connection.Write([]byte(message))
@@ -122,7 +122,7 @@ func (database *Database) HandelSocketWithoutAutorization(config *Config, client
 	}
 }
 
-func (database *Database) OpenSocketWithAutorization(config *Config) {
+func (database *Database) RunAuth(config *Config) {
 	config.logger("Opennig Socket on "+config.Listen.Ip+":"+config.Listen.Port+"/"+config.Listen.Protocol, 1)
 	socket,err := net.Listen(config.Listen.Protocol, config.Listen.Ip+":"+config.Listen.Port)
 	if err != nil {
@@ -143,7 +143,7 @@ func (database *Database) OpenSocketWithAutorization(config *Config) {
 				if err != nil {
 					config.logger("Error accepting socket: "+err.Error(), 2)
 				}
-				database.HandelSocketWithAutorization(config, client)
+				database.HandelSocketAuth(config, client)
 				Lock.Unlock()
 			}
 		}()
@@ -151,7 +151,7 @@ func (database *Database) OpenSocketWithAutorization(config *Config) {
 	Wait.Wait()
 }
 
-func (database *Database) OpenSocketWithoutAutorization(config *Config) {
+func (database *Database) RunNoAuth(config *Config) {
 	config.logger("Opennig Socket on "+config.Listen.Ip+":"+config.Listen.Port+"/"+config.Listen.Protocol, 1)
 	socket,err := net.Listen(config.Listen.Protocol, config.Listen.Ip+":"+config.Listen.Port)
 	if err != nil {
@@ -172,7 +172,7 @@ func (database *Database) OpenSocketWithoutAutorization(config *Config) {
 				if err != nil {
 					config.logger("Error accepting socket: "+err.Error(), 2)
 				}
-				database.HandelSocketWithoutAutorization(config, client)
+				database.HandelSocketNoAuth(config, client)
 				Lock.Unlock()
 			}
 		}()

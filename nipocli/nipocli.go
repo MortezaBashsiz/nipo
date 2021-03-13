@@ -42,14 +42,20 @@ func checkCmd(cmd string, config *nipo.Config) string {
 
 func Start(config *nipo.Config) {
 	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Woclome to nipo")
 	for {
 		fmt.Print("nipo > ")
-		cmd, err := reader.ReadString('\n')
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-		}
+		var char byte
+		cmd := ""
+		var err error
+		for char != byte('\n'){
+			char, err = reader.ReadByte()
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+			}
+			cmd += string(char)
+		} 
 		result := checkCmd(cmd, config)
-		result = strings.TrimSuffix(result, "\n")
-		fmt.Println(result)
+		fmt.Print(result)
 	}
 }

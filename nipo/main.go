@@ -8,8 +8,8 @@ func main() {
     database := CreateDatabase()
     config := GetConfig(os.Args[1])
     if config.Global.Authorization == "true" {
-        database.OpenSocketWithAutorization(config);
+        database.RunAuth(config);
     } else {
-        database.OpenSocketWithoutAutorization(config);
+        database.RunNoAuth(config);
     }
 }

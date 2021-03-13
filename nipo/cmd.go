@@ -112,7 +112,7 @@ func (database *Database) cmdAvg(cmd string) *Database {
     return returndb
 }
 
-func (database *Database) cmdWithAutorization(cmd string, config *Config, user *User) (*Database, string) {
+func (database *Database) cmdAuth(cmd string, config *Config, user *User) (*Database, string) {
     config.logger("client executed command : " + cmd, 2)
     config.logger("cmd.go - func cmd - with cmd : " + cmd , 2)
     config.logger("cmd.go - func cmd - with user : " + user.Name , 2)
@@ -191,7 +191,7 @@ func (database *Database) cmdWithAutorization(cmd string, config *Config, user *
     return db,message
 }
 
-func (database *Database) cmdWithoutAutorization(cmd string, config *Config, user *User) (*Database, string) {
+func (database *Database) cmdNoAuth(cmd string, config *Config, user *User) (*Database, string) {
     config.logger("client executed command : " + cmd, 2)
     config.logger("cmd.go - func cmd - with cmd : " + cmd , 2)
     config.logger("cmd.go - func cmd - with user : " + user.Name , 2)
