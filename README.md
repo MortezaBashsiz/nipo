@@ -1,146 +1,120 @@
 # Welcome to NIPO
 
-Nipo is going to be a powerful, fast, multi-thread and in-memory key-value database, written by GO.
+Nipo is going to be a powerful, fast, multi-thread, clustered and in-memory key-value database, written by GO.
 With several mathematical and aggregation functionalities on batch of keys and values.
 
 # Config file
+## global
+Global section defines some global parameters
+
+`authorization (string): [true/false]`
+
+Defines that the clients must work with token or not. If set "true" you have to define users section
+
+`master (string): [true/false]`
+
+Defines that this server has some slaves. If set "true" you have to define slaves section
+
+    global:  
+      authorization: "false"
+      master: "true"
+
+
+
+## slaves
+Slave section defines parameter about slaves of this server
+
+`id (int)` : defines the id of slave. Master will sync the slaves by id priority.
+
+`ip (string)` : is the IP of slave
+
+`port (string)` : is the listen port of destination IP
+
+`authorization (string) : [true/false]` defines if the destination slave uses token or not
+
+`token (string)` : in case of authorization is true, you need to define token
+
+
+    slaves:
+      - slave:
+        id : 1
+        ip : "127.0.0.1"
+        port : "2324"
+        authorization: "false"
+        token: "061b30a7-1a12-4280-8e3c-6bc9a19b1683"
+      - slave:
+        id : 2
+        ip : "127.0.0.1"
+        port : "2325"
+        authorization: "false"
+        token: "061b30a7-1a12-4280-8e3c-6bc9a19b1683"
+
+
+## proc
+Proc section defines parameters for multi-threading and multi-processing
+
+`cores (int)` : the count of cores you want to used by nipo
+
+`threads (int)` : the count of threads you want to created by nipo
+
+**NOTE** : the best practice is using threads two times of cores
+
+    proc:
+      cores: 2
+      threads: 4
+
+
 ## listen
 At this section you can configure your server side listen IP and PORT, currently only TCP is allowed.
 
+    listen:
+      ip: "0.0.0.0"
+      port: "2323"
+      protocol: "tcp"
+
 ## log
-At this section you can configure your server side log configuration.
+Log section defines parameters for logging
+
+    level (int) :
+      0 - no log
+      1 - info
+      2 - debug
+
+`path (string)` : defines the path of log file
+
+    log:
+      level: 1
+      path: "/tmp/nipo.log"
 
 ## users
-At this section you can configure the users and accesses to use commands and keys.
-- For keys use regex with delimiter "||".
-- For commands use lowercase with delimiter "||".
+Users section defines parameters for authorization. 
+If authorization in global section is true, this section had to be defined
+you can define several users
 
+`name (string)` : just is metadata for name of user
 
-# Features
+`token (string)` : used for authorization
 
-## set
-which provides you defining your key & value
+`keys (string)` : the regex of keys which user should have access.
+                if you have several regexes you can separate them with delimiter "||"
 
-Syntax : `set key value`
+`cmds (string)` : the list of commands that user should have access to execute
+                if you have several commands you can separate them with delimiter "||"
 
-**Notes** : 
-- The key could be any string without space or tab
-- The value could be any string even spaces and tabs, but for reducing the size and increasing the performance, Several spaces or tabs will be concatenated to one space
-- The output is set of data with key and value which is the correct amount of stored in memory
+    users:
+      - user:
+        name: "admin"
+        token: "061b30a7-1a12-4280-8e3c-6bc9a19b1683"
+        keys: ".*"
+        cmds: "all"
+      - user:
+        name: "readonly"
+        token: "0517376d-49c1-40eb-a8fc-fd73b70a4ce9"
+        keys: "name.*||.*log.*"
+        cmds: "get||select||avg"
 
-**Examples**
-	
-    nipo > set name My Name       Is  Morteza                    Bashsiz		MB
-    {"name":"My Name Is Morteza Bashsiz MB"}
-    nipo > set age 30
-    {"age":"30"}
-    nipo > set sex male
-    {"sex":"male"}
+# CLI
 
-## get
-which provides you get the value of specific key
+To introduce with CLI `nipocli` please visit the [LINK](nipo/nilocli/README.md).
 
-Syntax : `get key [key1 key2 key3 ... keyn]`
-
-**Notes** : 
-- The key could be any single or multiple string separated with space
-- The k
-
-**Examples**
-	
-    nipo > get name
-    {"name":"My Name Is Morteza Bashsiz MB"}
-    nipo > get name age sex
-    {"name":"My Name Is Morteza Bashsiz MB","sex":"male","age":"30"}
-
-## select
-which provides you get bulk of specified regex as value
-
-Syntax : `select reg.*`
-
-**Notes** : 
-- The key could be any string with standard regex format
-
-**Examples**
-	
-    nipo > nipo > set my_name Morteza Bashsiz
-    {"my_name":"Morteza Bashsiz"}
-    nipo > set my_age 30
-    {"my_age":"30"}
-    nipo > set my_sex male
-    {"my_sex":"male"}
-    nipo > set your_name Behi Rah
-    {"your_name":"Behi Rah"}
-    nipo > set your_age 34
-    {"your_age":"34"}
-    nipo > set your_sex female
-    {"your_sex":"female"}
-    nipo > get my.*
-    nipo > select my.*
-    {"my_name":"Morteza Bashsiz","my_age":"30","my_sex":"male"}
-    nipo > select your.*
-    {"your_name":"Behi Rah","your_age":"34"}
-    {"your_sex":"female"}
-    nipo > select *.age
-    nipo > select .*age.*
-    {"your_age":"34","my_age":"30"}
-    nipo > 
-
-## sum
-which provides you get the sum of values which matches with regex format
-
-Syntax : `sum reg.*`
-
-**Notes** : 
-- The key could be any string with standard regex format
-- The sum is in float64 format
-- If the value of some keys are not numerical it will replace with 0 (zero)
-
-**Examples**
-	
-    nipo > set f 1.5
-    {"f":"1.5"}
-    nipo > set fi 2.3
-    {"fi":"2.3"}
-    nipo > set fir 5 
-    {"fir":"5"}
-    nipo > set firs 6.7
-    {"firs":"6.7"}
-    nipo > set first first
-    {"first":"first"}
-    nipo > sum f.*
-    {"f.*":"15.500000"}
-    nipo > sum fi.*
-    {"fi.*":"14.000000"}
-    nipo > sum fir.*
-    {"fir.*":"11.700000"}
-    nipo > sum firs.*
-    {"firs.*":"6.700000"}
-    nipo > sum first.*
-    {"first.*":"0.000000"}
-    nipo >
-   
-## avg
-which provides you get the average of values which matches with regex format
-
-Syntax : `sum reg.*`
-
-**Notes** : 
-- The key could be any string with standard regex format
-- The sum is in float64 format
-- If the value of some keys are not numerical it will replace with 0 (zero)
-
-**Examples**
-	
-    nipo > set my_age 35.5
-    {"my_age":"35.5"}
-    nipo > set your_age 30
-    {"your_age":"30"}
-    nipo > set his_age 23.7
-    {"his_age":"23.7"}
-    nipo > set her_age 15.2
-    {"her_age":"15.2"}
-    nipo > avg .*age.*
-    {".*age.*":"26.100000"}
-    nipo >
 
