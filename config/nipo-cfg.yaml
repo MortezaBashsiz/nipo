@@ -2,7 +2,7 @@
 # Global section defines some global parameters
 
 # authorization (string): [true/false]
-# Defines that the clients must be work with token or not. If set "true" you have to define users section
+# Defines that the clients must work with token or not. If set "true" you have to define users section
 
 # master (string): [true/false]
 # Defines that this server has some slaves. If set "true" you have to define slaves section
@@ -33,7 +33,7 @@ slaves:
 # Proc section defines parameters for multi-threading and multi-processing
 # cores (int) : the count of cores you want to used by nipo
 # threads (int) : the count of threads you want to created by nipo
-# NOTE : the best practice is using threads to times of cores
+# NOTE : the best practice is using threads two times of cores
 proc:
   cores: 2
   threads: 4
