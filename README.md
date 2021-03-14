@@ -115,6 +115,6 @@ you can define several users
 
 # CLI
 
-To introduce with CLI `nipocli` please visit the [LINK](nipo/nilocli/README.md).
+To introduce with CLI `nipocli` please visit the [LINK](nilocli/README.md).
 
 
