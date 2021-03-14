@@ -119,4 +119,4 @@ To introduce with CLI `nipocli` please visit the [LINK](nipocli).
 
 # GO library
 
-To introduce how to use nipo with GO please visit the [LINK](nipolib/go/nipo).
+To introduce how to use nipo with GO please visit the [LINK](nipolib/go).
