@@ -7,8 +7,8 @@
 # master (string): [true/false]
 # Defines that this server has some slaves. If set "true" you have to define slaves section
 global:  
-  authorization: "false"
-  master: "true"
+  authorization: true
+  master: true
 
 # Slave section defines parameter about slaves of this server
 # id (int) : defines the id of slave. Master will sync the slaves by id priority.
@@ -19,14 +19,14 @@ global:
 slaves:
   - slave:
     id : 1
-    ip : "127.0.0.1"
-    port : "2324"
-    authorization: "false"
+    ip : 127.0.0.1
+    port : 2324
+    authorization: true
     token: "061b30a7-1a12-4280-8e3c-6bc9a19b1683"
   - slave:
     id : 2
-    ip : "127.0.0.1"
-    port : "2325"
+    ip : 127.0.0.1
+    port : 2325
     authorization: "false"
     token: "061b30a7-1a12-4280-8e3c-6bc9a19b1683"
 
@@ -41,9 +41,9 @@ proc:
 # Listen section defines parameters for used ip, port, protocol by nipo
 # NOTE : nipo currently used only tcp protocol
 listen:
-  ip: "0.0.0.0"
-  port: "2323"
-  protocol: "tcp"
+  ip: 0.0.0.0
+  port: 2323
+  protocol: tcp
 
 # Log section defines parameters for logging
 # level (int) :
@@ -53,7 +53,7 @@ listen:
 # path (string) : defines the path of log file
 log:
   level: 1
-  path: "/tmp/nipo.log"
+  path: /tmp/nipo.log
 
 # Users section defines parameters for authorization. 
 # If authorization in global section is true, this section had to be defined
@@ -66,12 +66,12 @@ log:
 #                 if you have several commands you can separate them with delimiter "||"
 users:
   - user:
-    name: "admin"
-    token: "061b30a7-1a12-4280-8e3c-6bc9a19b1683"
-    keys: ".*"
-    cmds: "all"
+    name: admin
+    token: 061b30a7-1a12-4280-8e3c-6bc9a19b1683
+    keys: .*
+    cmds: all
   - user:
-    name: "readonly"
-    token: "0517376d-49c1-40eb-a8fc-fd73b70a4ce9"
-    keys: "name.*||.*log.*"
-    cmds: "get||select||avg"
+    name: readonly
+    token: 0517376d-49c1-40eb-a8fc-fd73b70a4ce9
+    keys: name.*||.*log.*
+    cmds: get||select||avg
