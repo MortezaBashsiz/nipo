@@ -36,7 +36,7 @@ func (client *Client) Validate(token string, config *Config) bool {
 	return client.Authorized
 }
 
-func (database *Database) HandelSocketAuth(config *Config, client *Client) {
+func (database *Database) HandelSocket(config *Config, client *Client) {
 	defer client.Connection.Close()
 	strRemoteAddr := client.Connection.RemoteAddr().String()
 	input, err := bufio.NewReader(client.Connection).ReadString('\n')
@@ -53,7 +53,34 @@ func (database *Database) HandelSocketAuth(config *Config, client *Client) {
 		config.logger("Client terminated the connection from " + strRemoteAddr, 2)
 		return
 	}
-	if client.Validate(inputFields[0], config) {
+	if config.Global.Authorization == "true" {
+		if client.Validate(inputFields[0], config) {
+			cmd := ""
+			if len(inputFields) >= 3 {
+				cmd = inputFields[1]
+				for n:=2; n<len(inputFields); n++ {
+					cmd += " "+inputFields[n]
+				}   
+			}
+			returneddb,message := database.cmd(cmd, config, &client.User)
+			jsondb, err := json.Marshal(returneddb.items)
+			if message != ""{
+				client.Connection.Write([]byte(message))
+				client.Connection.Write([]byte("\n"))
+			}
+			if err != nil {
+				config.logger("Error in converting to json" , 1)
+			}
+			if len(jsondb) > 2 {
+				client.Connection.Write([]byte(message))
+				client.Connection.Write(jsondb)
+				client.Connection.Write([]byte("\n"))
+			}
+		} else {
+			config.logger("Wrong token "+strRemoteAddr, 1)
+			client.Connection.Close()
+		}
+	} else {
 		cmd := ""
 		if len(inputFields) >= 3 {
 			cmd = inputFields[1]
@@ -61,7 +88,7 @@ func (database *Database) HandelSocketAuth(config *Config, client *Client) {
 				cmd += " "+inputFields[n]
 			}   
 		}
-		returneddb,message := database.cmdAuth(cmd, config, &client.User)
+		returneddb,message := database.cmd(cmd, config, &client.User)
 		jsondb, err := json.Marshal(returneddb.items)
 		if message != ""{
 			client.Connection.Write([]byte(message))
@@ -75,54 +102,10 @@ func (database *Database) HandelSocketAuth(config *Config, client *Client) {
 			client.Connection.Write(jsondb)
 			client.Connection.Write([]byte("\n"))
 		}
-	} else {
-		config.logger("Wrong token "+strRemoteAddr, 1)
-		client.Connection.Close()
 	}
 }
 
-func (database *Database) HandelSocketNoAuth(config *Config, client *Client) {
-	defer client.Connection.Close()
-	strRemoteAddr := client.Connection.RemoteAddr().String()
-	input, err := bufio.NewReader(client.Connection).ReadString('\n')
-	if err != nil {
-			fmt.Println(err)
-			return
-	}
-	inputFields := strings.Fields(string(input))
-	if inputFields[0] == "exit" {
-		config.logger("Client closed the connection from " + strRemoteAddr, 2)
-		return
-	}
-	if inputFields[0] == "EOF" {
-		config.logger("Client terminated the connection from " + strRemoteAddr, 2)
-		return
-	}
-
-	cmd := ""
-	if len(inputFields) >= 3 {
-		cmd = inputFields[1]
-		for n:=2; n<len(inputFields); n++ {
-			cmd += " "+inputFields[n]
-		}   
-	}
-	returneddb,message := database.cmdNoAuth(cmd, config, &client.User)
-	jsondb, err := json.Marshal(returneddb.items)
-	if message != ""{
-		client.Connection.Write([]byte(message))
-		client.Connection.Write([]byte("\n"))
-	}
-	if err != nil {
-		config.logger("Error in converting to json" , 1)
-	}
-	if len(jsondb) > 2 {
-		client.Connection.Write([]byte(message))
-		client.Connection.Write(jsondb)
-		client.Connection.Write([]byte("\n"))
-	}
-}
-
-func (database *Database) RunAuth(config *Config) {
+func (database *Database) Run(config *Config) {
 	config.logger("Opennig Socket on "+config.Listen.Ip+":"+config.Listen.Port+"/"+config.Listen.Protocol, 1)
 	socket,err := net.Listen(config.Listen.Protocol, config.Listen.Ip+":"+config.Listen.Port)
 	if err != nil {
@@ -143,36 +126,7 @@ func (database *Database) RunAuth(config *Config) {
 				if err != nil {
 					config.logger("Error accepting socket: "+err.Error(), 2)
 				}
-				database.HandelSocketAuth(config, client)
-				Lock.Unlock()
-			}
-		}()
-	}
-	Wait.Wait()
-}
-
-func (database *Database) RunNoAuth(config *Config) {
-	config.logger("Opennig Socket on "+config.Listen.Ip+":"+config.Listen.Port+"/"+config.Listen.Protocol, 1)
-	socket,err := net.Listen(config.Listen.Protocol, config.Listen.Ip+":"+config.Listen.Port)
-	if err != nil {
-        config.logger("Error listening: "+err.Error(), 2)
-		os.Exit(1)
-	}
-	defer socket.Close()
-	runtime.GOMAXPROCS(config.Proc.Cores)
-	for thread := 0; thread < config.Proc.Threads; thread++ {
-		Wait.Add(1)
-		go func() {
-        	defer Wait.Done()
-			for {
-				Lock.Lock()
-				client := CreateClient()
-				var err error
-				client.Connection, err = socket.Accept()
-				if err != nil {
-					config.logger("Error accepting socket: "+err.Error(), 2)
-				}
-				database.HandelSocketNoAuth(config, client)
+				database.HandelSocket(config, client)
 				Lock.Unlock()
 			}
 		}()
