@@ -52,20 +52,26 @@ func cmdPing() string {
 /*
 sets the key and value into database
 */
-func (database *Database) cmdSet(config *Config, cmd string) *Database {
+func (database *Database) cmdSet(config *Config, cmd string) (*Database, bool) {
     cmdFields := strings.Fields(cmd)
     key := cmdFields[1]
     db := CreateDatabase() 
+    ok := false
     if len(cmdFields) >= 3 {
         value := cmdFields[2]
         for n:=3; n<len(cmdFields); n++ {
             value += " "+cmdFields[n]
         }   
         // SetOnSlaves(config,key,value)
-        database.Set(key,value)
-        db.items[key] = value
+        ok = database.Set(key,value)
+        if !ok {
+            return db, false
+        } else {
+            db.items[key] = value   
+            return db, true
+        }
     }
-    return db
+    return db, ok
 }
 
 /*
@@ -154,6 +160,7 @@ func (database *Database) cmd(cmd string, config *Config, user *User) (*Database
     config.logger("cmd.go - func cmd - with user : " + user.Name , 2)
     cmdFields := strings.Fields(cmd)
     db := CreateDatabase()
+    ok := false
     message := ""
     if len(cmdFields) >= 2 {
         switch cmdFields[0] {
@@ -161,7 +168,11 @@ func (database *Database) cmd(cmd string, config *Config, user *User) (*Database
             if config.Global.Authorization == "true" {
                 if validateCmd("set", user) {
                     if validateKey(cmdFields[1], user) {
-                        db = database.cmdSet(config, cmd)
+                        db, ok = database.cmdSet(config, cmd)
+                        if !ok {
+                            message = ("set failed by user "+ user.Name + " for command : " + cmd )
+                            config.logger(message, 1)
+                        }
                     }else{
                         message = ("User "+ user.Name +" not allowed to use regex : "+cmdFields[1])
                         config.logger(message, 1)
@@ -171,7 +182,11 @@ func (database *Database) cmd(cmd string, config *Config, user *User) (*Database
                     config.logger(message, 1)
                 }
             } else {
-                db = database.cmdSet(config, cmd)
+                db, ok = database.cmdSet(config, cmd)
+                if !ok {
+                    message = ("set failed by user "+ user.Name + " for command : " + cmd )
+                    config.logger(message, 1)
+                }
             }
             break
         case "get":

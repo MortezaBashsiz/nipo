@@ -1,3 +1,9 @@
+/*
+Written by Morteza Bashsiz <morteza.bashsiz@gmail.com> 
+This file contains all functions and objects related to handling network, sockets,
+	multi processing and multi threading
+*/
+
 package main
 
 import (

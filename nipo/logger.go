@@ -7,6 +7,9 @@ import (
     "strings"
 )
 
+/*
+writes the given log into log file and stdout
+*/
 func (config *Config) logger(strLog string, level int) {
 	file, err := os.OpenFile(config.Log.Path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
     prefix := ""

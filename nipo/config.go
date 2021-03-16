@@ -49,6 +49,9 @@ func CreateUser() *User {
 	return &User {}
 }
 
+/*
+validates the config file, syntax, values and logic of config file
+*/
 func ValidateConfig(config *Config) bool {
 	result := true
 	if !(config.Global.Authorization == "true" || config.Global.Authorization == "false") {
@@ -136,6 +139,9 @@ func ValidateConfig(config *Config) bool {
 	return result
 }
 
+/*
+reads the config file and return the config object
+*/
 func GetConfig(path string) *Config {  
 	file, err := os.Open(path)
 	config := CreateConfig()
