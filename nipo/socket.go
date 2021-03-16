@@ -5,7 +5,6 @@ import (
 	"sync"
 	"net"
 	"os"
-	"fmt"
 	"bufio"
 	"strings"
 	"encoding/json"
@@ -24,6 +23,9 @@ func CreateClient() *Client {
 	return &Client {}
 }
 
+/* 
+validate the client with given token
+*/
 func (client *Client) Validate(token string, config *Config) bool {
 	client.Authorized = false
 	for _, tempuser := range config.Users {
@@ -36,12 +38,17 @@ func (client *Client) Validate(token string, config *Config) bool {
 	return client.Authorized
 }
 
+/* 
+handels opened socket. after checking the authorization field at config, validates
+given token, checks the command fields count, executes the command, converts to json 
+and finally writes on opened socket
+*/
 func (database *Database) HandelSocket(config *Config, client *Client) {
 	defer client.Connection.Close()
 	strRemoteAddr := client.Connection.RemoteAddr().String()
 	input, err := bufio.NewReader(client.Connection).ReadString('\n')
 	if err != nil {
-			fmt.Println(err)
+			config.logger("Read from socket error : " + err.Error(), 2)
 			return
 	}
 	inputFields := strings.Fields(string(input))
@@ -69,7 +76,7 @@ func (database *Database) HandelSocket(config *Config, client *Client) {
 				client.Connection.Write([]byte("\n"))
 			}
 			if err != nil {
-				config.logger("Error in converting to json" , 1)
+				config.logger("Error in converting to json : " + err.Error(), 1)
 			}
 			if len(jsondb) > 2 {
 				client.Connection.Write([]byte(message))
@@ -77,7 +84,7 @@ func (database *Database) HandelSocket(config *Config, client *Client) {
 				client.Connection.Write([]byte("\n"))
 			}
 		} else {
-			config.logger("Wrong token "+strRemoteAddr, 1)
+			config.logger("Wrong token " + strRemoteAddr, 1)
 			client.Connection.Close()
 		}
 	} else {
@@ -95,7 +102,7 @@ func (database *Database) HandelSocket(config *Config, client *Client) {
 			client.Connection.Write([]byte("\n"))
 		}
 		if err != nil {
-			config.logger("Error in converting to json" , 1)
+			config.logger("Error in converting to json : " + err.Error(), 1)
 		}
 		if len(jsondb) > 2 {
 			client.Connection.Write([]byte(message))
@@ -105,11 +112,15 @@ func (database *Database) HandelSocket(config *Config, client *Client) {
 	}
 }
 
+/*
+called from main function, runs the service, multi-thread and multi-process handels here
+calles the HandelSocket function
+*/
 func (database *Database) Run(config *Config) {
 	config.logger("Opennig Socket on "+config.Listen.Ip+":"+config.Listen.Port+"/"+config.Listen.Protocol, 1)
 	socket,err := net.Listen(config.Listen.Protocol, config.Listen.Ip+":"+config.Listen.Port)
 	if err != nil {
-        config.logger("Error listening: "+err.Error(), 2)
+        config.logger("Error listening: " + err.Error(), 1)
 		os.Exit(1)
 	}
 	defer socket.Close()
@@ -124,7 +135,7 @@ func (database *Database) Run(config *Config) {
 				var err error
 				client.Connection, err = socket.Accept()
 				if err != nil {
-					config.logger("Error accepting socket: "+err.Error(), 2)
+					config.logger("Error accepting socket : " + err.Error(), 2)
 				}
 				database.HandelSocket(config, client)
 				Lock.Unlock()

@@ -6,7 +6,9 @@ import (
     "strconv"
     "regexp"
 )
-
+/*
+validates that user have permission to run the command or not
+*/
 func validateCmd(cmd string, user *User) bool {
     cmds := strings.Split(user.Cmds, "||")
     allowed := false
@@ -21,6 +23,9 @@ func validateCmd(cmd string, user *User) bool {
     return allowed
 }
 
+/*
+validates that user have access to this key (regex) or not
+*/
 func validateKey(key string, user *User) bool {
     keys := strings.Split(user.Keys, "||")
     allowed := false
@@ -36,10 +41,17 @@ func validateKey(key string, user *User) bool {
     return allowed
 }
 
+/*
+this returns pong as response of ping, it will be good for application layer
+health check
+*/
 func cmdPing() string {
     return "pong"
 }
 
+/*
+sets the key and value into database
+*/
 func (database *Database) cmdSet(config *Config, cmd string) *Database {
     cmdFields := strings.Fields(cmd)
     key := cmdFields[1]
@@ -56,6 +68,9 @@ func (database *Database) cmdSet(config *Config, cmd string) *Database {
     return db
 }
 
+/*
+gets the value of given keys, it will create a new databse as result
+*/
 func (database *Database) cmdGet(cmd string) *Database {
     cmdFields := strings.Fields(cmd)
     db := CreateDatabase()
@@ -70,6 +85,10 @@ func (database *Database) cmdGet(cmd string) *Database {
     return db
 }
 
+/*
+selects the keys and values which are matched in given regex
+it will create a new databse as result
+*/
 func (database *Database) cmdSelect(cmd string) *Database {
     cmdFields := strings.Fields(cmd)
     key := cmdFields[1]
@@ -80,6 +99,10 @@ func (database *Database) cmdSelect(cmd string) *Database {
     return db
 }
 
+/*
+summeries the values which mathed in given regex
+it will ignore non number values 
+*/
 func (database *Database) cmdSum(cmd string) *Database {
     cmdFields := strings.Fields(cmd)
     key := cmdFields[1]
@@ -97,6 +120,10 @@ func (database *Database) cmdSum(cmd string) *Database {
     return returndb
 }
 
+/*
+calculate the average of the values which mathed in given regex
+it will ignore non number values 
+*/
 func (database *Database) cmdAvg(cmd string) *Database {
     cmdFields := strings.Fields(cmd)
     key := cmdFields[1]
@@ -117,6 +144,10 @@ func (database *Database) cmdAvg(cmd string) *Database {
     return returndb
 }
 
+/*
+the main function to handle the command
+checks the validation and autorization of user to access the keys and commands
+*/
 func (database *Database) cmd(cmd string, config *Config, user *User) (*Database, string) {
     config.logger("client executed command : " + cmd, 2)
     config.logger("cmd.go - func cmd - with cmd : " + cmd , 2)
