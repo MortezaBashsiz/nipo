@@ -11,6 +11,9 @@ import (
 func checkCmd(cmd string, config *nipo.Config) string {
 	cmdFields := strings.Fields(cmd)
     result := ""
+	if len(cmdFields) == 1 && cmdFields[0] == "ping" {
+		result,_ = nipo.Ping(config)
+	}
     if len(cmdFields) >= 2 {
         switch cmdFields[0] {
         case "set":
