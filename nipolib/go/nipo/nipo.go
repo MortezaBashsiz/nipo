@@ -45,6 +45,18 @@ func (connection *Connection) Logout() bool {
 	return true
 }
 
+func Ping(config *Config) (string, bool) {
+	connection,ok := OpenConnection(config)
+	result := ""
+	if ok {
+		result,ok := connection.socketWrite(config.token + " ping ")
+		connection.Logout()
+		return result,ok	
+	} 
+	connection.Logout()
+	return result,ok
+}
+
 func Set(config *Config, key string, value string) (string, bool) {
 	connection,ok := OpenConnection(config)
 	result := ""
