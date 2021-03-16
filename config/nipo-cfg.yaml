@@ -7,8 +7,8 @@
 # master (string): [true/false]
 # Defines that this server has some slaves. If set "true" you have to define slaves section
 global:  
-  authorization: true
-  master: true
+  authorization: false
+  master: false
 
 # Slave section defines parameter about slaves of this server
 # id (int) : defines the id of slave. Master will sync the slaves by id priority.

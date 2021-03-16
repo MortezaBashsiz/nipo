@@ -31,13 +31,17 @@ func OpenConnection(config *Config) (Connection, bool) {
 	connection,ok := socketConnect(connectionString)
 	connection.connectionString = connectionString
 	if !ok {
-		fmt.Println("nipolib Error connecting to socket: ")
+		fmt.Println("nipolib Error connecting to socket: " + connectionString)
 	}
 	return *connection,ok
 }
 
 func (connection *Connection) Logout() bool {
-	connection.socket.Close()
+	err := connection.socket.Close()
+	if err != nil {
+		fmt.Println("nipolib Error logout from connection : " + err.Error())
+		return false	
+	}
 	return true
 }
 
@@ -46,8 +50,9 @@ func Set(config *Config, key string, value string) (string, bool) {
 	result := ""
 	if ok {
 		result,ok := connection.socketWrite(config.token + " set "+ key + " " + value)
+		connection.Logout()
 		return result,ok	
-	}
+	} 
 	connection.Logout()
 	return result,ok
 }

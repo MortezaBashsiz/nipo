@@ -13,6 +13,7 @@ func socketConnect(connectionString string) (*Connection,bool) {
 	socket,err := net.Dial("tcp", connectionStringFields[1]+":"+connectionStringFields[2])
 	if err != nil {
         fmt.Println("nipolib Error connecting to socket: "+err.Error())
+		return connection,false
 	}
 	connection.socket = socket
 	connection.connectionString = connectionString

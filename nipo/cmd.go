@@ -6,7 +6,9 @@ import (
     "strconv"
     "regexp"
 )
-
+/*
+validates that user have permission to run the command or not
+*/
 func validateCmd(cmd string, user *User) bool {
     cmds := strings.Split(user.Cmds, "||")
     allowed := false
@@ -21,6 +23,9 @@ func validateCmd(cmd string, user *User) bool {
     return allowed
 }
 
+/*
+validates that user have access to this key (regex) or not
+*/
 func validateKey(key string, user *User) bool {
     keys := strings.Split(user.Keys, "||")
     allowed := false
@@ -36,26 +41,42 @@ func validateKey(key string, user *User) bool {
     return allowed
 }
 
+/*
+this returns pong as response of ping, it will be good for application layer
+health check
+*/
 func cmdPing() string {
     return "pong"
 }
 
-func (database *Database) cmdSet(config *Config, cmd string) *Database {
+/*
+sets the key and value into database
+*/
+func (database *Database) cmdSet(config *Config, cmd string) (*Database, bool) {
     cmdFields := strings.Fields(cmd)
     key := cmdFields[1]
     db := CreateDatabase() 
+    ok := false
     if len(cmdFields) >= 3 {
         value := cmdFields[2]
         for n:=3; n<len(cmdFields); n++ {
             value += " "+cmdFields[n]
         }   
         // SetOnSlaves(config,key,value)
-        database.Set(key,value)
-        db.items[key] = value
+        ok = database.Set(key,value)
+        if !ok {
+            return db, false
+        } else {
+            db.items[key] = value   
+            return db, true
+        }
     }
-    return db
+    return db, ok
 }
 
+/*
+gets the value of given keys, it will create a new databse as result
+*/
 func (database *Database) cmdGet(cmd string) *Database {
     cmdFields := strings.Fields(cmd)
     db := CreateDatabase()
@@ -70,6 +91,10 @@ func (database *Database) cmdGet(cmd string) *Database {
     return db
 }
 
+/*
+selects the keys and values which are matched in given regex
+it will create a new databse as result
+*/
 func (database *Database) cmdSelect(cmd string) *Database {
     cmdFields := strings.Fields(cmd)
     key := cmdFields[1]
@@ -80,6 +105,10 @@ func (database *Database) cmdSelect(cmd string) *Database {
     return db
 }
 
+/*
+summeries the values which mathed in given regex
+it will ignore non number values 
+*/
 func (database *Database) cmdSum(cmd string) *Database {
     cmdFields := strings.Fields(cmd)
     key := cmdFields[1]
@@ -97,6 +126,10 @@ func (database *Database) cmdSum(cmd string) *Database {
     return returndb
 }
 
+/*
+calculate the average of the values which mathed in given regex
+it will ignore non number values 
+*/
 func (database *Database) cmdAvg(cmd string) *Database {
     cmdFields := strings.Fields(cmd)
     key := cmdFields[1]
@@ -117,12 +150,17 @@ func (database *Database) cmdAvg(cmd string) *Database {
     return returndb
 }
 
+/*
+the main function to handle the command
+checks the validation and autorization of user to access the keys and commands
+*/
 func (database *Database) cmd(cmd string, config *Config, user *User) (*Database, string) {
     config.logger("client executed command : " + cmd, 2)
     config.logger("cmd.go - func cmd - with cmd : " + cmd , 2)
     config.logger("cmd.go - func cmd - with user : " + user.Name , 2)
     cmdFields := strings.Fields(cmd)
     db := CreateDatabase()
+    ok := false
     message := ""
     if len(cmdFields) >= 2 {
         switch cmdFields[0] {
@@ -130,7 +168,11 @@ func (database *Database) cmd(cmd string, config *Config, user *User) (*Database
             if config.Global.Authorization == "true" {
                 if validateCmd("set", user) {
                     if validateKey(cmdFields[1], user) {
-                        db = database.cmdSet(config, cmd)
+                        db, ok = database.cmdSet(config, cmd)
+                        if !ok {
+                            message = ("set failed by user "+ user.Name + " for command : " + cmd )
+                            config.logger(message, 1)
+                        }
                     }else{
                         message = ("User "+ user.Name +" not allowed to use regex : "+cmdFields[1])
                         config.logger(message, 1)
@@ -140,7 +182,11 @@ func (database *Database) cmd(cmd string, config *Config, user *User) (*Database
                     config.logger(message, 1)
                 }
             } else {
-                db = database.cmdSet(config, cmd)
+                db, ok = database.cmdSet(config, cmd)
+                if !ok {
+                    message = ("set failed by user "+ user.Name + " for command : " + cmd )
+                    config.logger(message, 1)
+                }
             }
             break
         case "get":
