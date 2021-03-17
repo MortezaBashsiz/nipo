@@ -58,18 +58,20 @@ func (database *Database) HandelSocket(config *Config, client *Client) {
 			return
 	}
 	inputFields := strings.Fields(string(input))
-	if inputFields[1] == "ping" {
-		client.Connection.Write([]byte("pong"))
-		client.Connection.Write([]byte("\n"))
-		return
-	}
-	if inputFields[1] == "exit" {
-		config.logger("Client closed the connection from " + strRemoteAddr, 2)
-		return
-	}
-	if inputFields[1] == "EOF" {
-		config.logger("Client terminated the connection from " + strRemoteAddr, 2)
-		return
+	if len(inputFields) >= 2 {
+		if inputFields[1] == "ping" {
+			client.Connection.Write([]byte("pong"))
+			client.Connection.Write([]byte("\n"))
+			return
+		}
+		if inputFields[1] == "exit" {
+			config.logger("Client closed the connection from " + strRemoteAddr, 2)
+			return
+		}
+		if inputFields[1] == "EOF" {
+			config.logger("Client terminated the connection from " + strRemoteAddr, 2)
+			return
+		}
 	}
 	if config.Global.Authorization == "true" {
 		if client.Validate(inputFields[0], config) {
