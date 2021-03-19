@@ -15,9 +15,14 @@ Defines that the clients must work with token or not. If set "true" you have to 
 
 Defines that this server has some slaves. If set "true" you have to define slaves section
 
+`checkinterval (int):`
+
+Defines the interval of slaves healthcheck in milliseconds
+
     global:  
       authorization: "false"
       master: "true"
+      checkinterval: 1000
 
 
 

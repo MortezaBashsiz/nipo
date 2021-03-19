@@ -20,6 +20,7 @@ type Config struct {
 
 	Global struct {
 		Authorization, Master	string
+		Checkinterval int
 	}
 
 	Slaves []*Node

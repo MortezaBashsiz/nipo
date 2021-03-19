@@ -7,5 +7,8 @@ import (
 func main() {
     database := CreateDatabase()
     config := GetConfig(os.Args[1])
-    database.Run(config);
+    if config.Global.Master == "true" {
+        go database.RunCluster(config)
+    }
+    database.Run(config)
 }
