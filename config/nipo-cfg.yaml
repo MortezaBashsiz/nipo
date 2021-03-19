@@ -6,9 +6,14 @@
 
 # master (string): [true/false]
 # Defines that this server has some slaves. If set "true" you have to define slaves section
+
+# checkinterval (int):
+# the interval of slaves healthcheck in milliseconds
+
 global:  
   authorization: false
   master: true
+  checkinterval: 1000
 
 # Slave section defines parameter about slaves of this server
 # id (int) : defines the id of slave. Master will sync the slaves by id priority.
@@ -23,14 +28,12 @@ slaves:
     port : 2324
     authorization: true
     token: "061b30a7-1a12-4280-8e3c-6bc9a19b1683"
-    interval: 1
-  # - slave:
-  #   id : 2
-  #   ip : 127.0.0.1
-  #   port : 2325
-  #   authorization: "false"
-  #   token: "061b30a7-1a12-4280-8e3c-6bc9a19b1683"
-  #   interval: 1
+  - slave:
+    id : 2
+    ip : 127.0.0.1
+    port : 2325
+    authorization: "false"
+    token: "061b30a7-1a12-4280-8e3c-6bc9a19b1683"
 
 # Proc section defines parameters for multi-threading and multi-processing
 # cores (int) : the count of cores you want to used by nipo

@@ -40,8 +40,8 @@ func (cluster *Cluster) HealthCheck(config *Config) {
 			cluster.Status = "unhealthy"
 			config.logger("slave by id : " + string(slave.Node.Id) + "is not healthy", 1)
 		}
-		time.Sleep(1 * time.Second)
 	}
+	time.Sleep(time.Duration(config.Global.Checkinterval) * time.Millisecond)
 }
 
 func SetOnSlaves(config *Config,key,value string) bool {

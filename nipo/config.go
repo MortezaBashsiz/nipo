@@ -12,7 +12,7 @@ type User struct {
 }
 
 type Node struct {
-	Id,Interval 	int
+	Id 	int
 	Ip, Port, Authorization, Token	string
 }
 
@@ -20,6 +20,7 @@ type Config struct {
 
 	Global struct {
 		Authorization, Master	string
+		Checkinterval int
 	}
 
 	Slaves []*Node
