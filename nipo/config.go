@@ -12,7 +12,7 @@ type User struct {
 }
 
 type Node struct {
-	Id 	int
+	Id,Interval 	int
 	Ip, Port, Authorization, Token	string
 }
 
