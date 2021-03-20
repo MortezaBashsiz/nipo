@@ -5,9 +5,30 @@ Syntax : `nipocli -t TOKEN -s SERVER -p PORT`
 
     nipocli -t admin -s 127.0.0.1 -p 2323
 
+## ping
+You can be sure that your server is working or not whit ping. If you get the "PONG" everything is fine.
+
+Syntax : `ping`
+
+**Examples**
+
+    nipo > ping
+    pong
+
+
+## status
+With this command you can get the slaves status from master
+
+Syntax : `status`
+
+**Examples**
+
+    nipo > status
+    { { id : 1 , ip : 127.0.0.1 , status : unhealthy , checkedat : 2021-03-20 19:57:01.614 },{ id : 2 , ip : 127.0.0.1 , status : unhealthy , checkedat : 2021-03-20 19:57:01.614 } }
+
 
 ## set
-which provides you defining your key & value
+Which provides you defining your key & value
 
 Syntax : `set KEY VALUE`
 
