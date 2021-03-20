@@ -16,6 +16,19 @@ type Cluster struct {
 	Status string
 }
 
+func (cluster *Cluster) GetStatus() string {
+	result := "{ "
+	for index, slave := range cluster.Slaves {
+		tempStr := "{ id : "+strconv.Itoa(slave.Node.Id) + " , ip : " + slave.Node.Ip + " , status : " + slave.Status + " , checkedat : " + slave.CheckedAt + " }"
+		if !(index == len(cluster.Slaves)-1) {
+			tempStr += ","
+		}
+		result += tempStr
+	}
+	result += " }"
+	return result
+}
+
 func (config *Config) CreateCluster() *Cluster {
 	cluster := Cluster {}
 	for _, slave := range config.Slaves {
@@ -30,14 +43,19 @@ func (config *Config) CreateCluster() *Cluster {
 }
 
 func (cluster *Cluster) HealthCheck(config *Config) {
-	for _, slave:= range cluster.Slaves {
+	for index, slave:= range cluster.Slaves {
 		nipoconfig := nipo.CreateConfig(slave.Node.Token, slave.Node.Ip, slave.Node.Port)
 		result,_ := nipo.Ping(nipoconfig) 
 		if result == "pong\n" {
-			slave.Status = "healthy"
+			if slave.Status == "unhealthy" {
+				config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " becomes healthy", 1)
+			}
+			cluster.Slaves[index].Status = "healthy"
+			cluster.Slaves[index].CheckedAt = time.Now().Format("2006-01-02 15:04:05.000")
 			cluster.Status = "healthy"
 		} else {
-			slave.Status = "unhealthy"
+			cluster.Slaves[index].Status = "unhealthy"
+			cluster.Slaves[index].CheckedAt = time.Now().Format("2006-01-02 15:04:05.000")
 			cluster.Status = "unhealthy"
 			config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " is not healthy", 1)
 		}
@@ -54,7 +72,7 @@ func SetOnSlaves(config *Config,key,value string) bool {
 	return ok
 }
 
-func (databse *Database) RunCluster(config *Config, cluster *Cluster) {
+func (database *Database) RunCluster(config *Config, cluster *Cluster) {
 	for {
 		cluster.HealthCheck(config)
 	}

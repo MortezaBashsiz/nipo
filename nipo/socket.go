@@ -64,6 +64,12 @@ func (database *Database) HandelSocket(config *Config, cluster *Cluster, client 
 			client.Connection.Write([]byte("\n"))
 			return
 		}
+		if inputFields[1] == "status" {
+			status := cluster.GetStatus()
+			client.Connection.Write([]byte(status))
+			client.Connection.Write([]byte("\n"))
+			return
+		}
 		if inputFields[1] == "exit" {
 			config.logger("Client closed the connection from " + strRemoteAddr, 2)
 			return
