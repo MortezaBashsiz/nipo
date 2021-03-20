@@ -49,7 +49,7 @@ handels opened socket. after checking the authorization field at config, validat
 given token, checks the command fields count, executes the command, converts to json 
 and finally writes on opened socket
 */
-func (database *Database) HandelSocket(config *Config, client *Client) {
+func (database *Database) HandelSocket(config *Config, cluster *Cluster, client *Client) {
 	defer client.Connection.Close()
 	strRemoteAddr := client.Connection.RemoteAddr().String()
 	input, err := bufio.NewReader(client.Connection).ReadString('\n')
@@ -61,6 +61,12 @@ func (database *Database) HandelSocket(config *Config, client *Client) {
 	if len(inputFields) >= 2 {
 		if inputFields[1] == "ping" {
 			client.Connection.Write([]byte("pong"))
+			client.Connection.Write([]byte("\n"))
+			return
+		}
+		if inputFields[1] == "status" {
+			status := cluster.GetStatus()
+			client.Connection.Write([]byte(status))
 			client.Connection.Write([]byte("\n"))
 			return
 		}
@@ -82,7 +88,7 @@ func (database *Database) HandelSocket(config *Config, client *Client) {
 					cmd += " "+inputFields[n]
 				}   
 			}
-			returneddb,message := database.cmd(cmd, config, &client.User)
+			returneddb,message := database.cmd(cmd, config, cluster, &client.User)
 			jsondb, err := json.Marshal(returneddb.items)
 			if message != ""{
 				client.Connection.Write([]byte(message))
@@ -108,7 +114,7 @@ func (database *Database) HandelSocket(config *Config, client *Client) {
 				cmd += " "+inputFields[n]
 			}   
 		}
-		returneddb,message := database.cmd(cmd, config, &client.User)
+		returneddb,message := database.cmd(cmd, config, cluster, &client.User)
 		jsondb, err := json.Marshal(returneddb.items)
 		if message != ""{
 			client.Connection.Write([]byte(message))
@@ -129,7 +135,7 @@ func (database *Database) HandelSocket(config *Config, client *Client) {
 called from main function, runs the service, multi-thread and multi-process handels here
 calles the HandelSocket function
 */
-func (database *Database) Run(config *Config) {
+func (database *Database) Run(config *Config, cluster *Cluster) {
 	config.logger("Opennig Socket on "+config.Listen.Ip+":"+config.Listen.Port+"/"+config.Listen.Protocol, 1)
 	socket,err := net.Listen(config.Listen.Protocol, config.Listen.Ip+":"+config.Listen.Port)
 	if err != nil {
@@ -150,7 +156,7 @@ func (database *Database) Run(config *Config) {
 				if err != nil {
 					config.logger("Error accepting socket : " + err.Error(), 2)
 				}
-				database.HandelSocket(config, client)
+				database.HandelSocket(config, cluster, client)
 				Lock.Unlock()
 			}
 		}()

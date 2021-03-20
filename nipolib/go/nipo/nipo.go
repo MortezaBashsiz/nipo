@@ -53,7 +53,6 @@ func Ping(config *Config) (string, bool) {
 		connection.Logout()
 		return result,ok	
 	} 
-	connection.Logout()
 	return result,ok
 }
 
