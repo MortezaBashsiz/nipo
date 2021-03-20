@@ -14,6 +14,9 @@ func checkCmd(cmd string, config *nipo.Config) string {
 	if len(cmdFields) == 1 && cmdFields[0] == "ping" {
 		result,_ = nipo.Ping(config)
 	}
+	if len(cmdFields) == 1 && cmdFields[0] == "status" {
+		result,_ = nipo.Status(config)
+	}
     if len(cmdFields) >= 2 {
         switch cmdFields[0] {
         case "set":
