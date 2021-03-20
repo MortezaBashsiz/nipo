@@ -89,6 +89,10 @@ func ValidateConfig(config *Config) bool {
 		return false
 	}
 	if config.Global.Master == "true" {
+		if (config.Global.Checkinterval <= 0) {
+			config.logger("config incorrect : in case of master is true you have to defne checkinterval (int) " , 1)
+			return false
+		}
 		if len(config.Slaves) <= 0 {
 			config.logger("config incorrect : in case of master is true you have to defne at least one slave at slaves section  " , 1)
 			return false

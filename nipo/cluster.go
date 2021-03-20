@@ -3,6 +3,7 @@ package main
 import (
 	"nipo"
 	"time"
+	"strconv"
 )
 
 type Slave struct {
@@ -38,22 +39,22 @@ func (cluster *Cluster) HealthCheck(config *Config) {
 		} else {
 			slave.Status = "unhealthy"
 			cluster.Status = "unhealthy"
-			config.logger("slave by id : " + string(slave.Node.Id) + "is not healthy", 1)
+			config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " is not healthy", 1)
 		}
 	}
 	time.Sleep(time.Duration(config.Global.Checkinterval) * time.Millisecond)
 }
 
 func SetOnSlaves(config *Config,key,value string) bool {
+	ok := false
 	for _, slave:= range config.Slaves {
 		nipoconfig := nipo.CreateConfig(slave.Token, slave.Ip, slave.Port)
-		nipo.Set(nipoconfig, key, value) 
+		_,ok = nipo.Set(nipoconfig, key, value) 
 	}
-	return true
+	return ok
 }
 
-func (databse *Database) RunCluster(config *Config) {
-	cluster := config.CreateCluster()
+func (databse *Database) RunCluster(config *Config, cluster *Cluster) {
 	for {
 		cluster.HealthCheck(config)
 	}

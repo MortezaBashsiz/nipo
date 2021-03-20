@@ -6,6 +6,7 @@ import (
     "strconv"
     "regexp"
 )
+
 /*
 validates that user have permission to run the command or not
 */
@@ -39,14 +40,6 @@ func validateKey(key string, user *User) bool {
         }
     }
     return allowed
-}
-
-/*
-this returns pong as response of ping, it will be good for application layer
-health check
-*/
-func cmdPing() string {
-    return "pong"
 }
 
 /*
@@ -154,7 +147,7 @@ func (database *Database) cmdAvg(cmd string) *Database {
 the main function to handle the command
 checks the validation and autorization of user to access the keys and commands
 */
-func (database *Database) cmd(cmd string, config *Config, user *User) (*Database, string) {
+func (database *Database) cmd(cmd string, config *Config, cluster *Cluster, user *User) (*Database, string) {
     config.logger("client executed command : " + cmd, 2)
     config.logger("cmd.go - func cmd - with cmd : " + cmd , 2)
     config.logger("cmd.go - func cmd - with user : " + user.Name , 2)
