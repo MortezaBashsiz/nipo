@@ -9,7 +9,7 @@ func main() {
     config := GetConfig(os.Args[1])
     cluster := config.CreateCluster()
     if config.Global.Master == "true" {
-        go database.RunCluster(config, cluster)
+        database.RunCluster(config, cluster)
     }
     database.Run(config, cluster)
 }

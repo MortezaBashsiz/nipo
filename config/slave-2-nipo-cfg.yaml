@@ -44,7 +44,7 @@ proc:
 # NOTE : nipo currently used only tcp protocol
 listen:
   ip: 0.0.0.0
-  port: 2324
+  port: 2325
   protocol: tcp
 
 # Log section defines parameters for logging
@@ -54,7 +54,7 @@ listen:
 #   2 - debug
 # path (string) : defines the path of log file
 log:
-  level: 1
+  level: 2
   path: /tmp/nipo.log
 
 # Users section defines parameters for authorization. 

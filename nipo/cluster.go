@@ -9,6 +9,7 @@ import (
 type Slave struct {
 	Node *Node
 	Status, CheckedAt string
+	Database *Database
 }
 
 type Cluster struct {
@@ -36,6 +37,7 @@ func (config *Config) CreateCluster() *Cluster {
 		tempSlave.Node = slave
 		tempSlave.Status = "none"
 		tempSlave.CheckedAt = "none"
+		tempSlave.Database = CreateDatabase()
 		cluster.Slaves = append(cluster.Slaves, tempSlave)
 	}
 	cluster.Status = "none"
@@ -48,7 +50,19 @@ func (cluster *Cluster) HealthCheck(config *Config) {
 		result,_ := nipo.Ping(nipoconfig) 
 		if result == "pong\n" {
 			if slave.Status == "unhealthy" {
+				slave.Status = "recover"
 				config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " becomes healthy", 1)
+				config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " is in recovery", 1)
+				nipoconfig := nipo.CreateConfig(slave.Node.Token, slave.Node.Ip, slave.Node.Port)
+				slave.Database.Foreach(func (key,value string) {
+					config.logger(key+value, 1)
+					_, ok := nipo.Set(nipoconfig, key, value) 
+					if !ok {
+						config.logger("Set command on slave does not work correctly",2)
+					}
+				})
+				slave.Database = CreateDatabase()
+				config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " recovery compleated", 1)
 			}
 			cluster.Slaves[index].Status = "healthy"
 			cluster.Slaves[index].CheckedAt = time.Now().Format("2006-01-02 15:04:05.000")
@@ -63,13 +77,19 @@ func (cluster *Cluster) HealthCheck(config *Config) {
 	time.Sleep(time.Duration(config.Global.Checkinterval) * time.Millisecond)
 }
 
-func SetOnSlaves(config *Config,key,value string) bool {
-	ok := false
-	for _, slave:= range config.Slaves {
-		nipoconfig := nipo.CreateConfig(slave.Token, slave.Ip, slave.Port)
-		_,ok = nipo.Set(nipoconfig, key, value) 
+func (cluster *Cluster) SetOnSlaves(config *Config,key,value string) {
+	for _, slave:= range cluster.Slaves {
+		if slave.Status == "healthy" {
+			nipoconfig := nipo.CreateConfig(slave.Node.Token, slave.Node.Ip, slave.Node.Port)
+			_, ok := nipo.Set(nipoconfig, key, value) 
+			if !ok {
+				config.logger("Set command on slave does not work correctly",2)
+			}
+		} 
+		if slave.Status == "unhealthy" {
+			slave.Database.Set(key,value)
+		}
 	}
-	return ok
 }
 
 func (database *Database) RunCluster(config *Config, cluster *Cluster) {

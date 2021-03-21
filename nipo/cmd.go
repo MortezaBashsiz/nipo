@@ -45,7 +45,7 @@ func validateKey(key string, user *User) bool {
 /*
 sets the key and value into database
 */
-func (database *Database) cmdSet(config *Config, cmd string) (*Database, bool) {
+func (database *Database) cmdSet(config *Config, cluster *Cluster, cmd string) (*Database, bool) {
     cmdFields := strings.Fields(cmd)
     key := cmdFields[1]
     db := CreateDatabase() 
@@ -55,7 +55,7 @@ func (database *Database) cmdSet(config *Config, cmd string) (*Database, bool) {
         for n:=3; n<len(cmdFields); n++ {
             value += " "+cmdFields[n]
         }   
-        // SetOnSlaves(config,key,value)
+        cluster.SetOnSlaves(config,key,value)
         ok = database.Set(key,value)
         if !ok {
             return db, false
@@ -161,7 +161,7 @@ func (database *Database) cmd(cmd string, config *Config, cluster *Cluster, user
             if config.Global.Authorization == "true" {
                 if validateCmd("set", user) {
                     if validateKey(cmdFields[1], user) {
-                        db, ok = database.cmdSet(config, cmd)
+                        db, ok = database.cmdSet(config, cluster, cmd)
                         if !ok {
                             message = ("set failed by user "+ user.Name + " for command : " + cmd )
                             config.logger(message, 1)
@@ -175,7 +175,7 @@ func (database *Database) cmd(cmd string, config *Config, cluster *Cluster, user
                     config.logger(message, 1)
                 }
             } else {
-                db, ok = database.cmdSet(config, cmd)
+                db, ok = database.cmdSet(config, cluster, cmd)
                 if !ok {
                     message = ("set failed by user "+ user.Name + " for command : " + cmd )
                     config.logger(message, 1)
