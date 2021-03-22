@@ -144,6 +144,27 @@ func (database *Database) cmdAvg(cmd string) *Database {
 }
 
 /*
+counts the keys which mathed in given regex
+it will ignore non number values 
+*/
+func (database *Database) cmdCount(cmd string) *Database {
+    cmdFields := strings.Fields(cmd)
+    key := cmdFields[1]
+    db,err := database.Select(key)
+    returndb := CreateDatabase()
+    // var sum float64 = 0
+    count := 0
+    if err != nil {
+        fmt.Println(err)
+    }
+    db.Foreach(func (key,value string) {
+        count ++
+    })
+    returndb.items["count"] = strconv.Itoa(count)
+    return returndb
+}
+
+/*
 the main function to handle the command
 checks the validation and autorization of user to access the keys and commands
 */
@@ -157,6 +178,9 @@ func (database *Database) cmd(cmd string, config *Config, cluster *Cluster, user
     message := ""
     if len(cmdFields) >= 2 {
         switch cmdFields[0] {
+        case "count":
+            db = database.cmdCount(cmd)
+            break
         case "set":
             if config.Global.Authorization == "true" {
                 if validateCmd("set", user) {

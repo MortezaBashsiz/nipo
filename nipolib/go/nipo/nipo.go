@@ -122,3 +122,14 @@ func Sum(config *Config, key string) (string, bool) {
 	connection.Logout()
 	return result,ok
 }
+
+func Count(config *Config, key string) (string, bool) {
+	connection,ok := OpenConnection(config)
+	result := ""
+	if ok {
+		result,ok := connection.socketWrite(config.token + " count "+ key)
+		return result,ok
+	}
+	connection.Logout()
+	return result,ok
+}
