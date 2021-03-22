@@ -8,8 +8,5 @@ func main() {
     database := CreateDatabase()
     config := GetConfig(os.Args[1])
     cluster := config.CreateCluster()
-    if config.Global.Master == "true" {
-        database.RunCluster(config, cluster)
-    }
     database.Run(config, cluster)
 }

@@ -55,7 +55,7 @@ listen:
 # path (string) : defines the path of log file
 log:
   level: 2
-  path: /tmp/nipo.log
+  path: /tmp/slave-1-nipo.log
 
 # Users section defines parameters for authorization. 
 # If authorization in global section is true, this section had to be defined

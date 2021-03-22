@@ -136,6 +136,9 @@ called from main function, runs the service, multi-thread and multi-process hand
 calles the HandelSocket function
 */
 func (database *Database) Run(config *Config, cluster *Cluster) {
+	if config.Global.Master == "true" {
+        go database.RunCluster(config, cluster)
+    }
 	config.logger("Opennig Socket on "+config.Listen.Ip+":"+config.Listen.Port+"/"+config.Listen.Protocol, 1)
 	socket,err := net.Listen(config.Listen.Protocol, config.Listen.Ip+":"+config.Listen.Port)
 	if err != nil {
@@ -160,6 +163,6 @@ func (database *Database) Run(config *Config, cluster *Cluster) {
 				Lock.Unlock()
 			}
 		}()
+		Wait.Wait()
 	}
-	Wait.Wait()
 }

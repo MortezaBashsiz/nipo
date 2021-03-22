@@ -4,17 +4,30 @@ import (
 	"nipo"
 	"time"
 	"strconv"
+	"sync"
 )
+
+var WaitC sync.WaitGroup
+var LockC sync.Mutex
 
 type Slave struct {
 	Node *Node
 	Status, CheckedAt string
-	Database *Database
 }
 
 type Cluster struct {
 	Slaves []Slave
 	Status string
+}
+
+func SyncSlave(database *Database, config *Config, slave *Slave) {
+	nipoconfig := nipo.CreateConfig(slave.Node.Token, slave.Node.Ip, slave.Node.Port)
+	database.Foreach(func (key,value string) {
+		_, ok := nipo.Set(nipoconfig, key, value) 
+		if !ok {
+			config.logger("Set command on slave does not work correctly", 2)
+		}
+	})
 }
 
 func (cluster *Cluster) GetStatus() string {
@@ -37,44 +50,46 @@ func (config *Config) CreateCluster() *Cluster {
 		tempSlave.Node = slave
 		tempSlave.Status = "none"
 		tempSlave.CheckedAt = "none"
-		tempSlave.Database = CreateDatabase()
 		cluster.Slaves = append(cluster.Slaves, tempSlave)
 	}
 	cluster.Status = "none"
 	return &cluster
 }
 
-func (cluster *Cluster) HealthCheck(config *Config) {
-	for index, slave:= range cluster.Slaves {
-		nipoconfig := nipo.CreateConfig(slave.Node.Token, slave.Node.Ip, slave.Node.Port)
-		result,_ := nipo.Ping(nipoconfig) 
-		if result == "pong\n" {
-			if slave.Status == "unhealthy" {
-				slave.Status = "recover"
-				config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " becomes healthy", 1)
-				config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " is in recovery", 1)
-				nipoconfig := nipo.CreateConfig(slave.Node.Token, slave.Node.Ip, slave.Node.Port)
-				slave.Database.Foreach(func (key,value string) {
-					config.logger(key+value, 1)
-					_, ok := nipo.Set(nipoconfig, key, value) 
-					if !ok {
-						config.logger("Set command on slave does not work correctly",2)
+func (database *Database) RunCluster(config *Config, cluster *Cluster) {
+	for {
+		for index, slave:= range cluster.Slaves {
+			nipoconfig := nipo.CreateConfig(slave.Node.Token, slave.Node.Ip, slave.Node.Port)
+			result, _ := nipo.Ping(nipoconfig) 
+			if result == "pong\n" {
+				if slave.Status == "unhealthy" {
+					slave.Status = "recover"
+					config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " becomes healthy", 1)
+					config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " is in recovery", 1)
+					for slave.Status == "recover" {
+						syncDB := database
+						Lock.Lock()
+						SyncSlave(syncDB, config, &slave)
+						Lock.Unlock()
+						slave.Status = "healthy"
 					}
-				})
-				slave.Database = CreateDatabase()
-				config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " recovery compleated", 1)
+					config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " recovery compleated", 1)
+				}
+				cluster.Slaves[index].Status = "healthy"
+				cluster.Slaves[index].CheckedAt = time.Now().Format("2006-01-02 15:04:05.000")
+				cluster.Status = "healthy"
+			} else {
+				if slave.Status == "healthy" {
+					config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " becomes unhealthy", 1)	
+				}
+				cluster.Slaves[index].Status = "unhealthy"
+				cluster.Slaves[index].CheckedAt = time.Now().Format("2006-01-02 15:04:05.000")
+				cluster.Status = "unhealthy"
+				config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " is not healthy", 2)
 			}
-			cluster.Slaves[index].Status = "healthy"
-			cluster.Slaves[index].CheckedAt = time.Now().Format("2006-01-02 15:04:05.000")
-			cluster.Status = "healthy"
-		} else {
-			cluster.Slaves[index].Status = "unhealthy"
-			cluster.Slaves[index].CheckedAt = time.Now().Format("2006-01-02 15:04:05.000")
-			cluster.Status = "unhealthy"
-			config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " is not healthy", 1)
 		}
+		time.Sleep(time.Duration(config.Global.Checkinterval) * time.Millisecond)
 	}
-	time.Sleep(time.Duration(config.Global.Checkinterval) * time.Millisecond)
 }
 
 func (cluster *Cluster) SetOnSlaves(config *Config,key,value string) {
@@ -86,14 +101,5 @@ func (cluster *Cluster) SetOnSlaves(config *Config,key,value string) {
 				config.logger("Set command on slave does not work correctly",2)
 			}
 		} 
-		if slave.Status == "unhealthy" {
-			slave.Database.Set(key,value)
-		}
-	}
-}
-
-func (database *Database) RunCluster(config *Config, cluster *Cluster) {
-	for {
-		cluster.HealthCheck(config)
 	}
 }
