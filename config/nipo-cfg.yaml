@@ -13,7 +13,7 @@
 global:  
   authorization: false
   master: true
-  checkinterval: 1000
+  checkinterval: 10
 
 # Slave section defines parameter about slaves of this server
 # id (int) : defines the id of slave. Master will sync the slaves by id priority.

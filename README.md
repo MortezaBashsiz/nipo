@@ -1,7 +1,23 @@
 # Welcome to NIPO
 
-Nipo is going to be a powerful, fast, multi-thread, clustered and in-memory key-value database, written by GO.
+Nipo is a powerful, fast, multi-thread, clustered and in-memory key-value database, with ability to configure token and acl on commands and key-regexes written by GO.
 With several mathematical and aggregation functionalities on batch of keys and values.
+
+**Fast**
+
+Nipo will give you up to **15K OPS** in single mode and up to **2.5K OPS** in cluster mode with 2 slaves.
+
+**Multi-Thread**
+
+Nipo's architecture is multi-thread and you can define core and threads in your config file.
+
+**Clustered**
+
+Nipo supports several slaves and guaranties your slaves synchronization. It will automatically after comming up. You can ask your cluster status. The healthcheck interval could be configured in millisecond.
+
+**In-Memory**
+
+Nipo is in-memory database and data will be lost if service stops.
 
 # Config file
 ## global

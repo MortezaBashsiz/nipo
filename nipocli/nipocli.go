@@ -41,6 +41,10 @@ func checkCmd(cmd string, config *nipo.Config) string {
             break
         case "avg":
             result,_ = nipo.Avg(config, cmdFields[1])
+			break
+		case "count":
+            result,_ = nipo.Count(config, cmdFields[1])
+			break
         }
     } 
 	return result

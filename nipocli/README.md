@@ -152,3 +152,15 @@ Syntax : `avg reg.*`
     {".*age.*":"26.100000"}
     nipo >
 
+## count
+which provides you get the count of keys which matches with regex format
+
+Syntax : `count reg.*`
+
+**Notes** : 
+- The key could be any string with standard regex format
+
+**Examples**
+	
+    nipo > count a.*
+    {"count":"5432324"}
