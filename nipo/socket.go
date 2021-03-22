@@ -152,13 +152,13 @@ func (database *Database) Run(config *Config, cluster *Cluster) {
 		go func() {
         	defer Wait.Done()
 			for {
-				Lock.Lock()
 				client := CreateClient()
 				var err error
 				client.Connection, err = socket.Accept()
 				if err != nil {
 					config.logger("Error accepting socket : " + err.Error(), 2)
 				}
+				Lock.Lock()
 				database.HandelSocket(config, cluster, client)
 				Lock.Unlock()
 			}

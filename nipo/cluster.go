@@ -4,11 +4,7 @@ import (
 	"nipo"
 	"time"
 	"strconv"
-	"sync"
 )
-
-var WaitC sync.WaitGroup
-var LockC sync.Mutex
 
 type Slave struct {
 	Node *Node
@@ -20,7 +16,7 @@ type Cluster struct {
 	Status string
 }
 
-func SyncSlave(database *Database, config *Config, slave *Slave) {
+func (database *Database) SyncSlave(config *Config, slave *Slave) {
 	nipoconfig := nipo.CreateConfig(slave.Node.Token, slave.Node.Ip, slave.Node.Port)
 	database.Foreach(func (key,value string) {
 		_, ok := nipo.Set(nipoconfig, key, value) 
@@ -66,13 +62,10 @@ func (database *Database) RunCluster(config *Config, cluster *Cluster) {
 					slave.Status = "recover"
 					config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " becomes healthy", 1)
 					config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " is in recovery", 1)
-					for slave.Status == "recover" {
-						syncDB := database
-						Lock.Lock()
-						SyncSlave(syncDB, config, &slave)
-						Lock.Unlock()
-						slave.Status = "healthy"
-					}
+					Lock.Lock()
+					database.SyncSlave(config, &slave)
+					Lock.Unlock()
+					slave.Status = "healthy"
 					config.logger("slave by id : " + strconv.Itoa(slave.Node.Id) + " recovery compleated", 1)
 				}
 				cluster.Slaves[index].Status = "healthy"
@@ -92,14 +85,19 @@ func (database *Database) RunCluster(config *Config, cluster *Cluster) {
 	}
 }
 
-func (cluster *Cluster) SetOnSlaves(config *Config,key,value string) {
+func (cluster *Cluster) SetOnSlaves(config *Config,key,value string) bool {
 	for _, slave:= range cluster.Slaves {
 		if slave.Status == "healthy" {
 			nipoconfig := nipo.CreateConfig(slave.Node.Token, slave.Node.Ip, slave.Node.Port)
-			_, ok := nipo.Set(nipoconfig, key, value) 
-			if !ok {
-				config.logger("Set command on slave does not work correctly",2)
+			_, pingOK := nipo.Ping(nipoconfig)
+			if pingOK {
+				_, ok := nipo.Set(nipoconfig, key, value) 
+				if !ok {
+					config.logger("Set command on slave does not work correctly",2)
+					return false
+				}
 			}
 		} 
 	}
+	return true
 }
