@@ -13,7 +13,7 @@ Nipo's architecture is multi-thread and you can define core and threads in your 
 
 **Clustered**
 
-Nipo supports several slaves and guaranties your slaves synchronization. It will automatically after comming up. You can ask your cluster status. The healthcheck interval could be configured in millisecond.
+Nipo supports several slaves and guaranties your slaves synchronization. It will automatically sync slave after comming up. You can ask your cluster status. The healthcheck interval could be configured in millisecond.
 
 **In-Memory**
 
@@ -36,8 +36,8 @@ Defines that this server has some slaves. If set "true" you have to define slave
 Defines the interval of slaves healthcheck in milliseconds
 
     global:  
-      authorization: "false"
-      master: "true"
+      authorization: false
+      master: true
       checkinterval: 1000
 
 
@@ -59,16 +59,16 @@ Slave section defines parameter about slaves of this server
     slaves:
       - slave:
         id : 1
-        ip : "127.0.0.1"
-        port : "2324"
-        authorization: "false"
-        token: "061b30a7-1a12-4280-8e3c-6bc9a19b1683"
+        ip : 127.0.0.1
+        port : 2324
+        authorization: false
+        token: 061b30a7-1a12-4280-8e3c-6bc9a19b1683
       - slave:
         id : 2
-        ip : "127.0.0.1"
-        port : "2325"
-        authorization: "false"
-        token: "061b30a7-1a12-4280-8e3c-6bc9a19b1683"
+        ip : 127.0.0.1
+        port : 2325
+        authorization: false
+        token: 061b30a7-1a12-4280-8e3c-6bc9a19b1683
 
 
 ## proc
@@ -89,9 +89,9 @@ Proc section defines parameters for multi-threading and multi-processing
 At this section you can configure your server side listen IP and PORT, currently only TCP is allowed.
 
     listen:
-      ip: "0.0.0.0"
-      port: "2323"
-      protocol: "tcp"
+      ip: 0.0.0.0
+      port: 2323
+      protocol: tcp
 
 ## log
 Log section defines parameters for logging
@@ -124,15 +124,15 @@ you can define several users
 
     users:
       - user:
-        name: "admin"
-        token: "061b30a7-1a12-4280-8e3c-6bc9a19b1683"
-        keys: ".*"
-        cmds: "all"
+        name: admin
+        token: 061b30a7-1a12-4280-8e3c-6bc9a19b1683
+        keys: .*
+        cmds: all
       - user:
-        name: "readonly"
-        token: "0517376d-49c1-40eb-a8fc-fd73b70a4ce9"
-        keys: "name.*||.*log.*"
-        cmds: "get||select||avg"
+        name: readonly
+        token: 0517376d-49c1-40eb-a8fc-fd73b70a4ce9
+        keys: name.*||.*log.*
+        cmds: get||select||avg
 
 # CLI
 
