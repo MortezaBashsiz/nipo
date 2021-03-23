@@ -29,7 +29,7 @@ func (database *Database) SyncSlave(config *Config, slave *Slave) {
 func (cluster *Cluster) GetStatus() string {
 	result := "{ "
 	for index, slave := range cluster.Slaves {
-		tempStr := "{ id : "+strconv.Itoa(slave.Node.Id) + " , ip : " + slave.Node.Ip + " , status : " + slave.Status + " , checkedat : " + slave.CheckedAt + " }"
+		tempStr :=  "\"" + strconv.Itoa(slave.Node.Id) + "\" : " + "{ \"ip\" : \"" + slave.Node.Ip + "\" , \"status\" : \"" + slave.Status + "\" , \"checkedat\" : \"" + slave.CheckedAt + "\" }"
 		if !(index == len(cluster.Slaves)-1) {
 			tempStr += ","
 		}
