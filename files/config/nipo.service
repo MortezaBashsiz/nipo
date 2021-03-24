@@ -1,0 +1,17 @@
+[Unit]
+Description=Nipo server
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/nipo /etc/nipo/nipo-cfg.yaml 
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+RestartPreventExitStatus=255
+Type=simple
+LimitNOFILE=1000000
+LimitNPROC=1000000
+RuntimeDirectoryMode=0755
+
+[Install]
+WantedBy=multi-user.target
