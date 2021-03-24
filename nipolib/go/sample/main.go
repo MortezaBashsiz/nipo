@@ -12,13 +12,25 @@ var Wait sync.WaitGroup
 var Lock sync.Mutex
 
 func set(config *nipo.Config, regex string, max int) {
+	adas:=0
 	for n:=0 ; n <= max ; n++ {
+		adas ++
+		if adas == 1000 {
+			fmt.Println(n)
+			adas = 0
+		}
 		key := regex + "_" + strconv.Itoa(n)
 		nipo.Set(config, key, strconv.Itoa(n))
 	}
 }
 func get(config *nipo.Config, regex string, max int) {
+	adas:=0
 	for n:=0 ; n <= max ; n++ {
+		adas ++
+		if adas == 1000 {
+			fmt.Println(n)
+			adas = 0
+		}
 		key := regex + "_" + strconv.Itoa(n)
 		nipo.Get(config, key)
 	}
