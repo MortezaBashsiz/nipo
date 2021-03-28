@@ -65,7 +65,12 @@ func (database *Database) HandelSocket(config *Config, cluster *Cluster, client 
 			return
 		}
 		if inputFields[1] == "status" {
-			status := cluster.GetStatus()
+			status := ""
+			if config.Global.Master == "true" {
+				status = cluster.GetStatus()
+			} else {
+				status = "Not Clustered"
+			}
 			client.Connection.Write([]byte(status))
 			client.Connection.Write([]byte("\n"))
 			return

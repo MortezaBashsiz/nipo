@@ -12,7 +12,7 @@
 
 global:  
   authorization: false
-  master: true
+  master: false
   checkinterval: 1000
 
 # Slave section defines parameter about slaves of this server
