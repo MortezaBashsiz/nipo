@@ -26,6 +26,6 @@ class Config():
 
 def CreateConfig(token , server , port):
     global conf
-    conf = config(token , server , port )
+    conf = Config(token , server , port )
 
 
