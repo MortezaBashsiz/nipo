@@ -11,6 +11,10 @@ class nippoSocket:
 
     def connect(self, host, port):
         self.sock.connect((host, port))
+        err = self.sock.recv(1024)
+        if err != None :
+            print(repr(err))
+
 
     def send(self, msg):
         self.sock.send(bytes(msg , 'utf-8') )
