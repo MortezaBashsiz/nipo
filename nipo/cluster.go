@@ -9,6 +9,7 @@ import (
 type Slave struct {
 	Node *Node
 	Status, CheckedAt string
+	Database *Database
 }
 
 type Cluster struct {
@@ -94,10 +95,12 @@ func (cluster *Cluster) SetOnSlaves(config *Config,key,value string) bool {
 				_, ok := nipo.Set(nipoconfig, key, value) 
 				if !ok {
 					config.logger("Set command on slave does not work correctly",2)
-					return false
 				}
 			}
-		} 
+		}
+		if slave.Status == "unhealthy" {
+			slave.Database.Set(key,value)
+		}
 	}
 	return true
 }
