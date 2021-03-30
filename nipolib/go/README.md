@@ -10,7 +10,7 @@ GO library for nipo
     )
 
     func main() {
-    	config := nipo.CreateConfig("TOKEN", "IP of SERVER", "PORT")
+        config := nipo.CreateConfig("TOKEN", "IP of SERVER", "PORT")
         SetResult,Setok := nipo.Set(config, "KEY", "VALUE")
         if !Setok {
             fmt.Println("Error at set")    
