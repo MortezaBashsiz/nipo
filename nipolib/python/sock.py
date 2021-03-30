@@ -30,7 +30,7 @@ def CreateConfig(token , server , port):
 
 def CreateConnection() :
     global sock
-    sock = nipoSocket
+    sock = nipoSocket()
 
 def OpenConnection( ): 
     connectionString : conf.token + " " + conf.server + " " + conf.port
@@ -42,3 +42,4 @@ def ping():
     OpenConnection()
     string = conf.token + " " + "ping"
     sock.send(string)
+
