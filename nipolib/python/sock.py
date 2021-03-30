@@ -28,6 +28,10 @@ def CreateConfig(token , server , port):
     global conf
     conf = Config(token , server , port )
 
+def CreateConnection() :
+    global sock
+    sock = nipoSocket
+
 def OpenConnection( ): 
     connectionString : conf.token + " " + conf.server + " " + conf.port
     CreateConnection()
