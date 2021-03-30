@@ -32,3 +32,9 @@ def OpenConnection( ):
     connectionString : conf.token + " " + conf.server + " " + conf.port
     CreateConnection()
     sock.connect(conf.server , conf.port)
+
+
+def ping():    
+    OpenConnection()
+    string = conf.token + " " + "ping"
+    sock.send(string)
