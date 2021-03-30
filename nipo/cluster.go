@@ -82,7 +82,7 @@ func (database *Database) RunCluster(config *Config, cluster *Cluster) {
 				config.logger("slave by id : "+strconv.Itoa(slave.Node.Id)+" is not healthy", 2)
 			}
 		}
-		time.Sleep(time.Duration(config.Global.Checkinterval) * time.Millisecond)
+		time.Sleep(time.Duration(config.Global.CheckInterval) * time.Millisecond)
 	}
 }
 
