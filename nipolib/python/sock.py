@@ -28,4 +28,7 @@ def CreateConfig(token , server , port):
     global conf
     conf = Config(token , server , port )
 
-
+def OpenConnection( ): 
+    connectionString : conf.token + " " + conf.server + " " + conf.port
+    CreateConnection()
+    sock.connect(conf.server , conf.port)
