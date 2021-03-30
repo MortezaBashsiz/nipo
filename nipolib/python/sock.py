@@ -1,7 +1,6 @@
 import socket
 
 class nipoSocket:
-
     def __init__(self, sock=None):
         if sock is None:
             self.sock = socket.socket(
@@ -19,5 +18,14 @@ class nipoSocket:
         if response != None :
             print (repr(response))
 
+class Config():
+    def __init__(self, token, server, port):
+        self.token = token
+        self.server = server
+        self.port = port
+
+def CreateConfig(token , server , port):
+    global conf
+    conf = config(token , server , port )
 
 
