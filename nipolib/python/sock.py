@@ -1,6 +1,6 @@
 import socket
 
-class nippoSocket:
+class nipoSocket:
 
     def __init__(self, sock=None):
         if sock is None:
