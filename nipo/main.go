@@ -1,12 +1,12 @@
 package main
 
 import (
-    "os"
+	"os"
 )
 
 func main() {
-    database := CreateDatabase()
-    config := GetConfig(os.Args[1])
-    cluster := config.CreateCluster()
-    database.Run(config, cluster)
+	database := CreateDatabase()
+	config := GetConfig(os.Args[1])
+	cluster := config.CreateCluster()
+	database.Run(config, cluster)
 }
