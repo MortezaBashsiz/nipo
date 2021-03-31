@@ -33,7 +33,6 @@ def CreateConnection() :
     sock = nipoSocket()
 
 def OpenConnection( ): 
-    connectionString : conf.token + " " + conf.server + " " + conf.port
     CreateConnection()
     sock.connect(conf.server , conf.port)
 
