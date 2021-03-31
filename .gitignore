@@ -22,3 +22,6 @@ nipocli/nipocli
 
 # Ignored .idea
 .idea/
+
+# Ignored Deepsource file
+.deepsource.toml
