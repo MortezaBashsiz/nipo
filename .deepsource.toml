@@ -6,3 +6,4 @@ enabled = true
 
   [analyzers.meta]
   import_paths = ["github.com/Ja7ad/nipo"]
+  dependencies_vendored = true
