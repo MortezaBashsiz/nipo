@@ -33,7 +33,7 @@ func (database *Database) Set(key string, value string) bool {
 }
 
 /*
-handels foreach operation on database object
+handles foreach operation on database object
 */
 func (database *Database) Foreach(action func(string, string)) {
 	for key, value := range database.items {
