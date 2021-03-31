@@ -23,7 +23,7 @@ func (database *Database) Get(key string) (string, bool) {
 /*
 sets the given key value
 */
-func (database *Database) Set(key string, value string) bool {
+func (database *Database) Set(key, value string) bool {
 	database.items[key] = value
 	rvalue, ok := database.Get(key)
 	if rvalue != value {
@@ -33,7 +33,7 @@ func (database *Database) Set(key string, value string) bool {
 }
 
 /*
-handels foreach operation on database object
+handles foreach operation on database object
 */
 func (database *Database) Foreach(action func(string, string)) {
 	for key, value := range database.items {
