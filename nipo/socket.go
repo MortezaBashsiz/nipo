@@ -45,7 +45,7 @@ func (client *Client) Validate(token string, config *Config) bool {
 }
 
 /*
-handels opened socket. after checking the authorization field at config, validates
+handles opened socket. after checking the authorization field at config, validates
 given token, checks the command fields count, executes the command, converts to json
 and finally writes on opened socket
 */
@@ -138,13 +138,13 @@ func (database *Database) HandelSocket(config *Config, cluster *Cluster, client 
 
 /*
 called from main function, runs the service, multi-thread and multi-process handles here
-calles the HandelSocket function
+calls the HandelSocket function
 */
 func (database *Database) Run(config *Config, cluster *Cluster) {
 	if config.Global.Master == "true" {
 		go database.RunCluster(config, cluster)
 	}
-	config.logger("Opennig Socket on "+config.Listen.Ip+":"+config.Listen.Port+"/"+config.Listen.Protocol, 1)
+	config.logger("Opening Socket on "+config.Listen.Ip+":"+config.Listen.Port+"/"+config.Listen.Protocol, 1)
 	socket, err := net.Listen(config.Listen.Protocol, config.Listen.Ip+":"+config.Listen.Port)
 	if err != nil {
 		config.logger("Error listening: "+err.Error(), 1)
