@@ -45,11 +45,11 @@ func (client *Client) Validate(token string, config *Config) bool {
 }
 
 /*
-handels opened socket. after checking the authorization field at config, validates
+handles opened socket. after checking the authorization field at config, validates
 given token, checks the command fields count, executes the command, converts to json
 and finally writes on opened socket
 */
-func (database *Database) HandelSocket(config *Config, cluster *Cluster, client *Client) {
+func (database *Database) HandleSocket(config *Config, cluster *Cluster, client *Client) {
 	defer client.Connection.Close()
 	strRemoteAddr := client.Connection.RemoteAddr().String()
 	input, err := bufio.NewReader(client.Connection).ReadString('\n')
@@ -138,7 +138,7 @@ func (database *Database) HandelSocket(config *Config, cluster *Cluster, client 
 
 /*
 called from main function, runs the service, multi-thread and multi-process handles here
-calles the HandelSocket function
+calls the HandleSocket function
 */
 func (database *Database) Run(config *Config, cluster *Cluster) {
 	if config.Global.Master == "true" {
@@ -164,7 +164,7 @@ func (database *Database) Run(config *Config, cluster *Cluster) {
 					config.logger("Error accepting socket : "+err.Error(), 2)
 				}
 				Lock.Lock()
-				database.HandelSocket(config, cluster, client)
+				database.HandleSocket(config, cluster, client)
 				Lock.Unlock()
 			}
 		}()
