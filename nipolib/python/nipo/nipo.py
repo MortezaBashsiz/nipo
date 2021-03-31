@@ -11,7 +11,6 @@ class nipoSocket:
     def connect(self, host, port):
         self.sock.connect((host, port))
 
-
     def send(self, msg):
         self.sock.sendall(bytes(msg , 'utf-8') )
         response = self.sock.recv(1024)
@@ -24,9 +23,9 @@ class Config():
         self.server = server
         self.port = port
 
-def CreateConfig(token , server , port):
+def CreateConfig(token, server, port):
     global conf
-    conf = Config(token , server , port )
+    conf = Config(token, server, port )
 
 def CreateConnection() :
     global sock
@@ -34,11 +33,10 @@ def CreateConnection() :
 
 def OpenConnection( ): 
     CreateConnection()
-    sock.connect(conf.server , conf.port)
-
+    sock.connect(conf.server, conf.port)
 
 def ping():    
     OpenConnection()
-    string = conf.token + " " + "ping"
+    string = conf.token+" "+"ping"
     sock.send(string)
 
